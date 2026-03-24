@@ -3,572 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WiSo Prüfung – Anlagenmechaniker SHK 2023 (angepasst auf 2026)</title>
+<title>WiSo Pr&#252;fung &#8211; Anlagenmechaniker SHK 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
-  .container { max-width: 740px; margin: 0 auto; padding: 32px 20px; }
-
-  .start-screen { text-align: center; padding-top: 50px; animation: fadeIn 0.5s ease; }
-  .start-screen h1 { font-size: 30px; font-weight: 800; color: #f1f5f9; line-height: 1.3; margin-bottom: 10px; }
-  .start-screen .desc { font-size: 15px; color: #94a3b8; margin-bottom: 6px; }
-  .start-screen .meta { font-size: 13px; color: #64748b; margin-bottom: 28px; }
-
-  .name-input-wrap { margin-bottom: 28px; }
-  .name-input-wrap label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-  .name-input { width: 100%; max-width: 360px; padding: 14px 18px; background: #1e293b; border: 2px solid #334155; border-radius: 12px; color: #f1f5f9; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; text-align: center; }
-  .name-input:focus { border-color: #818cf8; }
-  .name-input::placeholder { color: #475569; }
-
-  .btn-start { display: block; margin: 0 auto 16px auto; padding: 16px 52px; background: linear-gradient(135deg, #6366f1, #a78bfa); color: #fff; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 28px rgba(99,102,241,0.35); transition: transform 0.2s, opacity 0.2s; }
-  .btn-start:hover:not(:disabled) { transform: scale(1.05); }
-  .btn-start:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  .btn-admin { display: block; margin: 0 auto; padding: 10px 28px; background: transparent; color: #475569; border: 1px dashed #334155; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-  .btn-admin:hover:not(:disabled) { color: #94a3b8; border-color: #64748b; }
-  .btn-admin:disabled { opacity: 0.3; cursor: not-allowed; }
-  .admin-badge { display: inline-block; background: #f59e0b; color: #0f172a; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-  .hints-box { margin-top: 44px; padding: 20px 24px; background: #1e293b; border-radius: 14px; text-align: left; }
-  .hints-box .label { font-size: 13px; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
-  .hints-box ul { list-style: none; font-size: 13px; color: #94a3b8; line-height: 2; }
-  .hints-box ul li::before { content: "•"; color: #6366f1; margin-right: 8px; }
-
-  .progress-wrap { margin-bottom: 28px; }
-  .progress-info { display: flex; justify-content: space-between; font-size: 13px; color: #64748b; margin-bottom: 6px; }
-  .progress-info .stats { display: flex; gap: 14px; }
-  .progress-info .correct { color: #22c55e; }
-  .progress-info .wrong { color: #ef4444; }
-  .progress-bar { height: 5px; background: #1e293b; border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a78bfa); border-radius: 3px; transition: width 0.4s ease; }
-
-  .question-wrap { animation: slideIn 0.35s ease; }
-  .question-num { color: #818cf8; font-weight: 700; margin-right: 8px; }
-  .question-text { font-size: 17px; font-weight: 600; line-height: 1.55; color: #f1f5f9; margin-bottom: 22px; }
-  .options { display: flex; flex-direction: column; gap: 10px; }
-  .option-btn { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 13px 18px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 15px; font-family: inherit; transition: all 0.2s; line-height: 1.45; }
-  .option-btn:hover:not(:disabled) { background: #334155; border-color: #818cf8; }
-  .option-btn:disabled { cursor: default; }
-  .option-btn .letter { font-weight: 700; color: #818cf8; margin-right: 10px; }
-  .option-btn.is-correct { background: rgba(34,197,94,0.13); border-color: #22c55e; color: #86efac; }
-  .option-btn.is-correct .letter { color: #22c55e; }
-  .option-btn.is-wrong { background: rgba(239,68,68,0.13); border-color: #ef4444; color: #fca5a5; }
-  .option-btn.dimmed { opacity: 0.45; }
-
-  .match-item { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; transition: all 0.3s; }
-  .match-item.is-correct { background: rgba(34,197,94,0.08); border-color: #22c55e; }
-  .match-item.is-wrong { background: rgba(239,68,68,0.08); border-color: #ef4444; }
-  .match-item .text { font-size: 14px; color: #e2e8f0; margin-bottom: 10px; line-height: 1.5; }
-  .match-item .correction { font-size: 12px; color: #86efac; margin-top: 8px; }
-  .match-btns { display: flex; gap: 7px; flex-wrap: wrap; }
-  .match-btn { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-family: inherit; cursor: pointer; border: 1px solid #334155; background: #0f172a; color: #94a3b8; transition: all 0.2s; }
-  .match-btn:disabled { cursor: default; }
-  .match-btn.selected { background: #6366f1; color: #fff; border-color: transparent; font-weight: 600; }
-  .match-btn.selected-correct { background: #22c55e; color: #fff; border-color: transparent; font-weight: 600; }
-  .match-btn.selected-wrong { background: #ef4444; color: #fff; border-color: transparent; font-weight: 600; }
-  .btn-check { margin-top: 18px; padding: 12px 30px; background: #334155; color: #64748b; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: not-allowed; transition: all 0.2s; }
-  .btn-check.active { background: #6366f1; color: #fff; cursor: pointer; }
-  .btn-check.active:hover { background: #818cf8; }
-
-  .explanation { margin-top: 22px; padding: 16px 20px; border-radius: 12px; border-left: 4px solid; animation: fadeIn 0.3s ease; }
-  .explanation.correct { background: rgba(34,197,94,0.07); border-color: #22c55e; }
-  .explanation.wrong { background: rgba(239,68,68,0.07); border-color: #ef4444; }
-  .explanation .verdict { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px; }
-  .explanation.correct .verdict { color: #22c55e; }
-  .explanation.wrong .verdict { color: #ef4444; }
-  .explanation .expl-text { font-size: 14px; color: #cbd5e1; line-height: 1.65; }
-
-  .next-row { text-align: right; margin-top: 20px; }
-  .btn-next { padding: 12px 32px; background: #6366f1; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-  .btn-next:hover { background: #818cf8; }
-
-  .result-screen { text-align: center; animation: fadeIn 0.5s ease; }
-  .result-screen .emoji { font-size: 60px; margin-bottom: 12px; }
-  .result-screen h1 { font-size: 26px; font-weight: 800; color: #f1f5f9; margin-bottom: 10px; }
-  .result-screen .pct { font-size: 52px; font-weight: 800; margin-bottom: 4px; }
-  .result-screen .pct.pass { color: #22c55e; }
-  .result-screen .pct.fail { color: #ef4444; }
-  .result-screen .count { font-size: 15px; color: #94a3b8; margin-bottom: 6px; }
-  .result-screen .grade { font-size: 20px; font-weight: 700; color: #a78bfa; margin-bottom: 24px; }
-  .result-section-title { font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; text-align: left; font-weight: 700; }
-  .result-item { padding: 12px 16px; margin-bottom: 7px; border-radius: 10px; text-align: left; border-left: 3px solid; }
-  .result-item.c { background: rgba(34,197,94,0.06); border-color: #22c55e; }
-  .result-item.w { background: rgba(239,68,68,0.06); border-color: #ef4444; }
-  .result-item .q-text { font-size: 13px; color: #e2e8f0; line-height: 1.4; }
-  .result-item .q-num { color: #818cf8; font-weight: 700; }
-  .result-item .q-verdict { font-size: 11px; margin-top: 4px; font-weight: 600; }
-  .result-item.c .q-verdict { color: #86efac; }
-  .result-item.w .q-verdict { color: #fca5a5; }
-
-  .leaderboard { margin-top: 4px; margin-bottom: 24px; text-align: left; }
-  .leaderboard-title { font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-  .leaderboard-title span { font-size: 18px; }
-  .lb-loading { font-size: 13px; color: #64748b; padding: 20px; text-align: center; }
-  .lb-error { font-size: 13px; color: #94a3b8; padding: 16px; text-align: center; background: #1e293b; border-radius: 10px; }
-  .lb-table { width: 100%; border-collapse: collapse; }
-  .lb-table th { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; text-align: left; border-bottom: 1px solid #1e293b; font-weight: 700; }
-  .lb-table td { font-size: 14px; color: #e2e8f0; padding: 10px 12px; border-bottom: 1px solid #1e293b; }
-  .lb-rank { font-weight: 800; color: #818cf8; min-width: 32px; display: inline-block; }
-  .lb-rank.gold { color: #fbbf24; }
-  .lb-rank.silver { color: #94a3b8; }
-  .lb-rank.bronze { color: #d97706; }
-  .lb-medal { margin-right: 4px; }
-  .lb-name { font-weight: 600; }
-  .lb-pct { font-weight: 700; }
-  .lb-pct.good { color: #22c55e; }
-  .lb-pct.ok { color: #fbbf24; }
-  .lb-pct.bad { color: #ef4444; }
-  .lb-note { color: #94a3b8; font-size: 13px; }
-  .lb-datum { color: #64748b; font-size: 12px; }
-  .save-status { font-size: 13px; color: #64748b; margin-bottom: 16px; text-align: center; }
-  .save-status.success { color: #22c55e; }
-  .save-status.error { color: #ef4444; }
-
-
-
-  .tabs { display: flex; gap: 0; margin-bottom: 20px; background: #1e293b; border-radius: 10px; overflow: hidden; }
-  .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #64748b; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-  .tab-btn.active { background: #334155; color: #f1f5f9; }
-  .tab-btn:hover:not(.active) { color: #94a3b8; }
-
-  .btn-restart { padding: 14px 40px; background: linear-gradient(135deg, #6366f1, #a78bfa); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; margin-top: 28px; transition: transform 0.2s; }
-  .btn-restart:hover { transform: scale(1.05); }
-
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #334155; border-top-color: #818cf8; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}.container{max-width:740px;margin:0 auto;padding:32px 20px}.start-screen{text-align:center;padding-top:50px;animation:fadeIn .5s ease}.start-screen h1{font-size:30px;font-weight:800;color:#f1f5f9;line-height:1.3;margin-bottom:10px}.start-screen .desc{font-size:15px;color:#94a3b8;margin-bottom:6px}.start-screen .meta{font-size:13px;color:#64748b;margin-bottom:28px}.name-input-wrap{margin-bottom:28px}.name-input-wrap label{display:block;font-size:13px;color:#94a3b8;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px}.name-input{width:100%;max-width:360px;padding:14px 18px;background:#1e293b;border:2px solid #334155;border-radius:12px;color:#f1f5f9;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;text-align:center}.name-input:focus{border-color:#818cf8}.name-input::placeholder{color:#475569}.btn-start{display:block;margin:0 auto 16px auto;padding:16px 52px;background:linear-gradient(135deg,#6366f1,#a78bfa);color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 28px rgba(99,102,241,.35);transition:transform .2s,opacity .2s}.btn-start:hover:not(:disabled){transform:scale(1.05)}.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none}.btn-admin{display:block;margin:0 auto;padding:10px 28px;background:transparent;color:#475569;border:1px dashed #334155;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}.btn-admin:hover:not(:disabled){color:#94a3b8;border-color:#64748b}.btn-admin:disabled{opacity:.3;cursor:not-allowed}.admin-badge{display:inline-block;background:#f59e0b;color:#0f172a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}.hints-box{margin-top:44px;padding:20px 24px;background:#1e293b;border-radius:14px;text-align:left}.hints-box .label{font-size:13px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}.hints-box ul{list-style:none;font-size:13px;color:#94a3b8;line-height:2}.hints-box ul li::before{content:"\2022";color:#6366f1;margin-right:8px}.progress-wrap{margin-bottom:28px}.progress-info{display:flex;justify-content:space-between;font-size:13px;color:#64748b;margin-bottom:6px}.progress-info .stats{display:flex;gap:14px}.progress-info .correct{color:#22c55e}.progress-info .wrong{color:#ef4444}.progress-bar{height:5px;background:#1e293b;border-radius:3px;overflow:hidden}.progress-fill{height:100%;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:3px;transition:width .4s ease}.question-wrap{animation:slideIn .35s ease}.question-num{color:#818cf8;font-weight:700;margin-right:8px}.question-text{font-size:17px;font-weight:600;line-height:1.55;color:#f1f5f9;margin-bottom:22px}.options{display:flex;flex-direction:column;gap:10px}.option-btn{background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:13px 18px;border-radius:10px;cursor:pointer;text-align:left;font-size:15px;font-family:inherit;transition:all .2s;line-height:1.45}.option-btn:hover:not(:disabled){background:#334155;border-color:#818cf8}.option-btn:disabled{cursor:default}.option-btn .letter{font-weight:700;color:#818cf8;margin-right:10px}.option-btn.is-correct{background:rgba(34,197,94,.13);border-color:#22c55e;color:#86efac}.option-btn.is-correct .letter{color:#22c55e}.option-btn.is-wrong{background:rgba(239,68,68,.13);border-color:#ef4444;color:#fca5a5}.option-btn.dimmed{opacity:.45}.match-item{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px 16px;margin-bottom:12px;transition:all .3s}.match-item.is-correct{background:rgba(34,197,94,.08);border-color:#22c55e}.match-item.is-wrong{background:rgba(239,68,68,.08);border-color:#ef4444}.match-item .text{font-size:14px;color:#e2e8f0;margin-bottom:10px;line-height:1.5}.match-item .correction{font-size:12px;color:#86efac;margin-top:8px}.match-btns{display:flex;gap:7px;flex-wrap:wrap}.match-btn{padding:5px 14px;border-radius:20px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid #334155;background:#0f172a;color:#94a3b8;transition:all .2s}.match-btn:disabled{cursor:default}.match-btn.selected{background:#6366f1;color:#fff;border-color:transparent;font-weight:600}.match-btn.selected-correct{background:#22c55e;color:#fff;border-color:transparent;font-weight:600}.match-btn.selected-wrong{background:#ef4444;color:#fff;border-color:transparent;font-weight:600}.btn-check{margin-top:18px;padding:12px 30px;background:#334155;color:#64748b;border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;cursor:not-allowed;transition:all .2s}.btn-check.active{background:#6366f1;color:#fff;cursor:pointer}.btn-check.active:hover{background:#818cf8}.explanation{margin-top:22px;padding:16px 20px;border-radius:12px;border-left:4px solid;animation:fadeIn .3s ease}.explanation.correct{background:rgba(34,197,94,.07);border-color:#22c55e}.explanation.wrong{background:rgba(239,68,68,.07);border-color:#ef4444}.explanation .verdict{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}.explanation.correct .verdict{color:#22c55e}.explanation.wrong .verdict{color:#ef4444}.explanation .expl-text{font-size:14px;color:#cbd5e1;line-height:1.65}.next-row{text-align:right;margin-top:20px}.btn-next{padding:12px 32px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}.btn-next:hover{background:#818cf8}.result-screen{text-align:center;animation:fadeIn .5s ease}.result-screen .emoji{font-size:60px;margin-bottom:12px}.result-screen h1{font-size:26px;font-weight:800;color:#f1f5f9;margin-bottom:10px}.result-screen .pct{font-size:52px;font-weight:800;margin-bottom:4px}.result-screen .pct.pass{color:#22c55e}.result-screen .pct.fail{color:#ef4444}.result-screen .count{font-size:15px;color:#94a3b8;margin-bottom:6px}.result-screen .grade{font-size:20px;font-weight:700;color:#a78bfa;margin-bottom:24px}.result-section-title{font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;text-align:left;font-weight:700}.result-item{padding:12px 16px;margin-bottom:7px;border-radius:10px;text-align:left;border-left:3px solid}.result-item.c{background:rgba(34,197,94,.06);border-color:#22c55e}.result-item.w{background:rgba(239,68,68,.06);border-color:#ef4444}.result-item .q-text{font-size:13px;color:#e2e8f0;line-height:1.4}.result-item .q-num{color:#818cf8;font-weight:700}.result-item .q-verdict{font-size:11px;margin-top:4px;font-weight:600}.result-item.c .q-verdict{color:#86efac}.result-item.w .q-verdict{color:#fca5a5}.leaderboard{margin-top:4px;margin-bottom:24px;text-align:left}.leaderboard-title{font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;font-weight:700;display:flex;align-items:center;gap:8px}.leaderboard-title span{font-size:18px}.lb-loading{font-size:13px;color:#64748b;padding:20px;text-align:center}.lb-error{font-size:13px;color:#94a3b8;padding:16px;text-align:center;background:#1e293b;border-radius:10px}.lb-table{width:100%;border-collapse:collapse}.lb-table th{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px;padding:8px 12px;text-align:left;border-bottom:1px solid #1e293b;font-weight:700}.lb-table td{font-size:14px;color:#e2e8f0;padding:10px 12px;border-bottom:1px solid #1e293b}.lb-rank{font-weight:800;color:#818cf8;min-width:32px;display:inline-block}.lb-rank.gold{color:#fbbf24}.lb-rank.silver{color:#94a3b8}.lb-rank.bronze{color:#d97706}.lb-medal{margin-right:4px}.lb-name{font-weight:600}.lb-pct{font-weight:700}.lb-pct.good{color:#22c55e}.lb-pct.ok{color:#fbbf24}.lb-pct.bad{color:#ef4444}.lb-note{color:#94a3b8;font-size:13px}.lb-datum{color:#64748b;font-size:12px}.save-status{font-size:13px;color:#64748b;margin-bottom:16px;text-align:center}.save-status.success{color:#22c55e}.save-status.error{color:#ef4444}.tabs{display:flex;gap:0;margin-bottom:20px;background:#1e293b;border-radius:10px;overflow:hidden}.tab-btn{flex:1;padding:12px;background:transparent;border:none;color:#64748b;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}.tab-btn.active{background:#334155;color:#f1f5f9}.tab-btn:hover:not(.active){color:#94a3b8}.btn-restart{padding:14px 40px;background:linear-gradient(135deg,#6366f1,#a78bfa);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:28px;transition:transform .2s}.btn-restart:hover{transform:scale(1.05)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}.spinner{display:inline-block;width:18px;height:18px;border:2px solid #334155;border-top-color:#818cf8;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
 </style>
 </head>
 <body>
 <div class="container" id="app"></div>
-
 <script>
-var SHEET_URL = "https://script.google.com/macros/s/AKfycbzfUqLHUvWHtohFxLoWHd50LHlD1HW5dN_NncsyebgHfyXvzP89BTwM8-Lz5YfAzo1tPg/exec";
-var ADMIN_TEST_COUNT = 3;
-
-var QUESTIONS = [
-  { id:1, type:"single", question:'Was versteht man unter „Just-in-Time"-Produktion?', options:["Schlanke Produktion","Zulieferung ohne Zwischenlagerung","Schlanke Unternehmensführung","Arbeitnehmer arbeiten, wann sie wollen","Auslagerung von Produktionsstätten"], correct:1, explanation:"Just-in-Time = Materialien werden genau dann geliefert, wenn sie benötigt werden – ohne Zwischenlagerung." },
-  { id:2, type:"single", question:'Was bedeutet die Abkürzung „ver.di"?', options:["Vereinte Dienstleistungsgewerkschaft","Verdienstordnung für Ingenieure","Verein Deutscher Ingenieure","Verbraucher Dienstleistungsgewerkschaft","Vertreter der Deutschen Industriegewerkschaft"], correct:0, explanation:'ver.di = Vereinte Dienstleistungsgewerkschaft, eine der größten Einzelgewerkschaften der Welt.' },
-  { id:3, type:"single", question:"Die unbeschränkte Geschäftsfähigkeit beginnt mit …", options:["18 Jahren.","der Geburt.","25 Jahren.","21 Jahren.","7 Jahren."], correct:0, explanation:"Mit 18 Jahren wird man unbeschränkt geschäftsfähig (§ 2 BGB)." },
-  { id:4, type:"single", question:"Welcher Sozialversicherungszweig zahlt nur der Arbeitgeber?", options:["Pflegeversicherung","Krankenversicherung","Unfallversicherung","Arbeitslosenversicherung","Rentenversicherung"], correct:2, explanation:"Die Unfallversicherung (Berufsgenossenschaft) wird allein vom Arbeitgeber finanziert." },
-  { id:5, type:"single", question:"Welcher Begriff entspricht der richterlichen Gewalt?", options:["Initiative","Exekutive","Legislative","Alternative","Judikative"], correct:4, explanation:"Judikative = richterliche Gewalt. Legislative = gesetzgebend, Exekutive = ausführend." },
-  { id:6, type:"single", question:"Das Grundrecht, sich mit Bitten und Beschwerden an Volksvertreter zu wenden, heißt …", options:["Asylrecht.","Recht auf Freizügigkeit.","Recht auf freie Entfaltung der Persönlichkeit.","Diskretionsrecht.","Petitionsrecht."], correct:4, explanation:"Petitionsrecht (Art. 17 GG) = Recht auf Bitten und Beschwerden an die Volksvertretung." },
-  { id:7, type:"single", question:'Welche Person ist eine „juristische Person"?', options:["Verfassungsrichterin","Rechtsanwalt","Staatsanwalt","Fred Feuerstein GmbH","Polizeioberkommissar"], correct:3, explanation:"Juristische Person = Rechtsgebilde wie GmbH, AG, Verein." },
-  { id:8, type:"single", question:"Unter einem Nachfrage-Monopol versteht man …", options:["Markt mit einem Anbieter und vielen Nachfragern.","Markt zwischen Südpol und Nordpol.","Markt mit vielen Anbietern und einem Nachfrager.","Abkürzung für Monopolykäufer.","Markt mit einigen Anbietern und vielen Nachfragern."], correct:2, explanation:"Nachfragemonopol (Monopson) = ein Nachfrager, viele Anbieter." },
-  { id:9, type:"single", question:"Wer ist der saarländische Minister für Inneres, Bauen und Sport (2026)?", options:["Reinhold Jost","Tobias Hans","Anke Rehlinger","Uwe Conradt","Peter Strobel"], correct:0, explanation:"Reinhold Jost (SPD) ist seit April 2022 Minister für Inneres, Bauen und Sport im Saarland." },
-  { id:10, type:"single", question:"Wo muss der Ausbildungsvertrag (Anlagenmechaniker SHK) eingereicht werden?", options:["Industrie- und Handelskammer","Gewerbeaufsichtsamt","Handwerkskammer","Gesetzliche Krankenversicherung","Berufsgenossenschaft"], correct:2, explanation:"Handwerksberuf = Ausbildungsvertrag bei der Handwerkskammer (HWK)." },
-  { id:11, type:"single", question:"Welches Gesetz regelt Ausbildungszeit, Vergütung, Urlaub und Probezeit?", options:["Jugendschutzgesetz","Betriebsverfassungsgesetz","Grundgesetz","Jugendarbeitsschutzgesetz","Berufsbildungsgesetz"], correct:4, explanation:"Das Berufsbildungsgesetz (BBiG) regelt die Rahmenbedingungen der dualen Berufsausbildung." },
-  { id:12, type:"single", question:"Wer wurde 2022 Thronfolger nach Queen Elizabeth II?", options:["König Charles I.","König Charles III.","König Charles II.","König Charles V.","König Charles IV."], correct:1, explanation:"Prinz Charles wurde als König Charles III. gekrönt." },
-  { id:13, type:"single", question:"Was versteht man unter Tarifautonomie?", options:["Sozialpartner handeln ohne staatliche Einmischung Tarifverträge aus.","Während der Laufzeit dürfen Arbeitskampfmaßnahmen stattfinden.","Arbeitnehmer und Arbeitgeber werden ausgeschlossen.","Nur mit Staatszustimmung darf ein Tarifvertrag geschlossen werden.","Die Löhne steigen stetig."], correct:0, explanation:"Tarifautonomie (Art. 9 Abs. 3 GG) = eigenständige Tarifverhandlungen ohne Staat." },
-  { id:14, type:"single", question:"Was sind Bürgerinitiativen?", options:["Interessenvereinigungen","Politische Parteien","Soziale Netzwerke","Religiöse Sekten","Saarländische Nachbarschaftshilfe"], correct:0, explanation:"Bürgerinitiativen = Zusammenschlüsse für ein gemeinsames Anliegen." },
-  { id:15, type:"single", question:"Welches Gremium hat 1948 das Grundgesetz ausgearbeitet?", options:["Bundesverfassungsgericht","Deutscher Bundestag","Kontrollrat","Bundeskanzler und Bundespräsident","Parlamentarischer Rat"], correct:4, explanation:"Der Parlamentarische Rat (Präsident: Adenauer) erarbeitete 1948/49 das Grundgesetz." },
-  { id:16, type:"single", question:"Welches sind die drei volkswirtschaftlichen Produktionsfaktoren?", options:["Energie, Arbeit, Rohstoffe","Kapital, Rohstoffe, Arbeit","Arbeit, Kapital, Organisation","Arbeit, Boden, Energie","Arbeit, Boden, Kapital"], correct:4, explanation:"Klassische Produktionsfaktoren: Arbeit, Boden (Natur), Kapital." },
-  { id:17, type:"single", question:"Was ist das duale Berufsausbildungssystem?", options:["Ministerium und Berufsschulen verantwortlich.","System der Abfallentsorgung.","Ausbildung dauert immer zweieinhalb Jahre.","Markt mit zwei Anbietern und Nachfragern.","Ausbildung an zwei Lernorten: Betrieb und Berufsschule."], correct:4, explanation:"Dual = zwei Lernorte: Betrieb (Praxis) + Berufsschule (Theorie)." },
-  { id:18, type:"single", question:"Was ist der Generationenvertrag?", options:["Rentenzahlungen werden bei Generationenwechsel neu geregelt.","Jüngere sichern regelmäßige Rentenerhöhung.","Beiträge werden angesammelt und im Alter ausgezahlt.","Erwerbstätige finanzieren mit Beiträgen die Renten der Ruheständler.","Rentenzahlungen werden verzinst angelegt."], correct:3, explanation:"Generationenvertrag = Umlageverfahren: Erwerbstätige finanzieren die aktuellen Renten." },
-  { id:19, type:"single", question:"Was ist Föderalismus?", options:["Zusammenlegung von Rheinland-Pfalz und Saarland","Parlamentarisches System","Dreiteilung der Staatsgewalt","Fördern sozialer Projekte","Eigenstaatlichkeit der Länder innerhalb eines Bundesstaates"], correct:4, explanation:"Föderalismus = Bundesländer haben eigene Verfassung, Regierung und Gesetzgebung." },
-  { id:20, type:"single", question:"Wann können politische Parteien verboten werden?", options:["Wenn sie unbequem werden.","Wenn sie für direkte Demokratie werben.","Wenn sie die freiheitlich-demokratische Grundordnung gefährden.","Wenn sie Finanzierung nicht offenlegen.","Wenn sie unter 5 % bleiben."], correct:2, explanation:"Art. 21 Abs. 2 GG: Parteien können verboten werden, wenn sie die fdGO gefährden." },
-  { id:21, type:"single", question:"Welches ist ein existenzielles Bedürfnis?", options:["Neuestes Smartphone","Nahrung und Kleidung","Schickes Restaurant","Markenkleidung","Meister-Fortbildung"], correct:1, explanation:"Existenzbedürfnisse sichern das Überleben: Nahrung, Kleidung, Wohnung." },
-  { id:22, type:"single", question:"Was ist Datenschutz?", options:["Sichere Datenträger","Überwachung durch Behörden","Schutz vor unerlaubter Verwendung persönlicher Daten","Datenspeicherung gegen Missbrauch","Daten an Dritte weiterleiten"], correct:2, explanation:"Datenschutz = Recht auf informationelle Selbstbestimmung (DSGVO)." },
-  { id:23, type:"single", question:'Wie wird „Markt" richtig definiert?', options:["Arbeitsmarkt für Anlagenmechaniker.","Ort zum Pressfittings-Kauf.","Ort, an dem Nachfrage und Angebot regelmäßig aufeinander treffen.","Betriebe bieten Güter an.","Reguliert sich nur über das Angebot."], correct:2, explanation:"Markt = Ort (auch virtuell), an dem Angebot und Nachfrage aufeinander treffen." },
-  { id:24, type:"single", question:"Staat plant Produktion, Preise und Kosten zentral. Welche Wirtschaftsform?", options:["Planwirtschaft","Soziale Marktwirtschaft","Angebot-Nachfrage-Wirtschaft","Kartellwirtschaft","Freie Marktwirtschaft"], correct:0, explanation:"Planwirtschaft = Staat plant alles zentral." },
-  { id:25, type:"single", question:"Wo stehen die Grundrechte?", options:["Im BGB","Im Strafgesetzbuch","Im Grundgesetz","Im Handelsgesetzbuch","Im Grundrechtsgesetzbuch"], correct:2, explanation:"Grundrechte = Artikel 1–19 des Grundgesetzes (GG)." },
-  { id:26, type:"single", question:"Was sagt das GG über die Familie?", options:["Kein übergeordneter Stellenwert.","Großfamilien zahlen keine Steuern.","Freibad-Vergünstigungen.","Ehe und Familie unter besonderem Schutz der staatlichen Ordnung.","Nur Familien dürfen Kinder erziehen."], correct:3, explanation:"Art. 6 Abs. 1 GG: Ehe und Familie stehen unter besonderem Schutz." },
-  { id:27, type:"single", question:"Welche Aussage über Bedürfnisse ist richtig?", options:["Bleiben stets gleich.","Kosten immer Geld.","Ändern sich und werden durch Werbung beeinflusst.","Entwicklungsländer haben keine.","Durch Haushaltsbuch immer befriedigt."], correct:2, explanation:"Bedürfnisse wandeln sich durch Werbung, Trends und technischen Fortschritt." },
-  { id:28, type:"single", question:"Welche Steuer ist eine direkte Steuer?", options:["Tabaksteuer","Einkommensteuer","Mehrwertsteuer","Energiesteuer","Schaumweinsteuer"], correct:1, explanation:"Direkte Steuer = Steuerschuldner und Steuerträger identisch." },
-  { id:29, type:"single", question:"Grundgedanke der Gewaltenteilung?", options:["Staatsgewalt vom Volk, nicht teilbar.","Polizei und Justiz teilen Strafgewalt.","Richter verurteilen ohne Verfahren.","Parlament, Regierung, Gerichte kontrollieren sich gegenseitig.","Nur Exekutive und Judikative getrennt."], correct:3, explanation:"Legislative, Exekutive, Judikative sind getrennt und kontrollieren sich gegenseitig." },
-  { id:30, type:"single", question:"Was bedeutet Demokratie?", options:["Herrschaft des Einzelnen","Volksherrschaft","Herrschaft der Industrie","Herrschaft einer Partei","Monarchie"], correct:1, explanation:"Griechisch: demos (Volk) + kratein (herrschen) = Volksherrschaft." },
-  { id:31, type:"single", question:"Welche Konjunktur-Erläuterung ist NICHT richtig?", options:["Rezession = Tiefstand","Boom = Hochkonjunktur","Expansion = Aufschwung","Rezession = Abschwung","Depression = Tiefstand"], correct:0, explanation:"Rezession = Abschwung (nicht Tiefstand!). Tiefstand = Depression." },
-  { id:32, type:"single", question:"Welche Aufzählung enthält nur Verbrauchssteuern?", options:["Einkommensteuer, Kfz-Steuer, Körperschaftsteuer","Gewerbesteuer, Schaumweinsteuer, Lohnsteuer","Kaffeesteuer, Erbschaftsteuer, Grundsteuer","Getränkesteuer, Zinsabschlagsteuer, Einkommensteuer","Tabaksteuer, Biersteuer, Mineralölsteuer"], correct:4, explanation:"Verbrauchssteuern = auf den Verbrauch bestimmter Waren erhoben." },
-  { id:33, type:"single", question:"Welche Aufzählung enthält nur einseitige Rechtsgeschäfte?", options:["Schuldanerkenntnis, Mietvertrag, Leihvertrag","Kündigung, Mietvertrag, Testament","Kündigung, Testament, Mahnung","Pachtvertrag, Testament, Mahnung","Leihvertrag, Mahnung, Erbvertrag"], correct:2, explanation:"Einseitig = eine Willenserklärung: Kündigung, Testament, Mahnung." },
-  { id:34, type:"single", question:"Bester Schutz gegen Arbeitslosigkeit?", options:["Gewerkschaft","Führerschein","Partei","Zweite Ausbildung","Weiterbildung im eigenen Beruf"], correct:4, explanation:"Berufliche Weiterbildung erhöht Flexibilität = bester Schutz." },
-  { id:35, type:"single", question:"Warum ist der 3. Oktober Nationalfeiertag?", options:["Mauerfall","Wiedervereinigung","Auflösung der Sowjetunion","NATO-Aufnahme","Ende des 2. Weltkriegs"], correct:1, explanation:"3. Oktober 1990 = Deutsche Wiedervereinigung. Mauerfall = 9. November 1989." },
-  { id:36, type:"matching", question:"Ordnen Sie die Beispiele der Wirtschaftsform zu (FMW / SMW / ZPW).", pairs:[{item:"Kartellgesetze gegen Monopolbildung",match:"SMW"},{item:"Nur die billigsten Arbeitskräfte haben eine Chance",match:"FMW"},{item:"Schutz der wirtschaftlich Schwachen",match:"SMW"},{item:"Gesamter Wirtschaftsablauf staatlich geplant",match:"ZPW"},{item:"Freies Unternehmertum nicht zugelassen",match:"ZPW"},{item:"Vollkommene Konkurrenz zwischen Erzeuger und Verbraucher",match:"FMW"}], matchOptions:["FMW","SMW","ZPW"], explanation:"FMW = keine Eingriffe, SMW = Markt + Sozialschutz, ZPW = Staat plant alles." },
-  { id:37, type:"single", question:"Warum hängt Geschäftsfähigkeit vom Alter ab?", options:["Eltern haften bis 18.","Eigenverantwortliches Handeln braucht Einsichtsfähigkeit und Alter.","GG entzieht Minderjährigen Vertragsrecht.","Erst ab 18 darf man ein Konto eröffnen."], correct:1, explanation:"Geistige Reife wächst mit dem Alter, daher die Abstufung zum Schutz junger Menschen." },
-  { id:38, type:"matching", question:"Ordnen Sie die Begriffe den Erklärungen zu.", pairs:[{item:"Der Staat hilft Bürgern in Not.",match:"Sozialstaat"},{item:"Das Volk regiert sich selbst durch Wahlen.",match:"Demokratie"},{item:"Zusammenleben durch Recht und Gesetz geregelt.",match:"Rechtsstaat"}], matchOptions:["Demokratie","Rechtsstaat","Sozialstaat"], explanation:"Sozialstaat = Schwächenschutz, Demokratie = Volksherrschaft, Rechtsstaat = Bindung an Gesetz." },
-  { id:39, type:"single", question:"Welche Koalition regiert seit 2025 auf Bundesebene?", options:["SPD, Grüne, FDP (Ampel)","CDU/CSU und SPD (Schwarz-Rot)","CDU/CSU und Grüne","SPD und Grüne"], correct:1, explanation:"Seit 2025: CDU/CSU + SPD unter Kanzler Friedrich Merz (CDU)." },
-  { id:40, type:"matching", question:"Ordnen Sie zu: Beiträge, Steuern, Gebühren oder Zölle.", pairs:[{item:"Ausstellung eines Führerscheins",match:"Gebühren"},{item:"Hallenbad-Nutzung",match:"Gebühren"},{item:"Arbeitgeberanteil Sozialversicherung",match:"Beiträge"},{item:"Zahlung nach Kfz-Zulassung",match:"Steuern"},{item:"Entgelt bei Warenimport an der Grenze",match:"Zölle"}], matchOptions:["Beiträge","Steuern","Gebühren","Zölle"], explanation:"Gebühren = Gegenleistung, Beiträge = Sozialversicherung, Steuern = ohne Gegenleistung, Zölle = Import." },
-  { id:41, type:"single", question:"Was bedeutet die 5 %-Sperrklausel?", options:["Halbe Sitze unter 5 %.","Verhindert Einzug kleiner Parteien, um Zersplitterung zu vermeiden.","Parteien unter 5 % werden verboten.","Gilt nur bei Landtagswahlen."], correct:1, explanation:"5 %-Hürde verhindert Parlamentszersplitterung – Lehre aus Weimar." },
-  { id:42, type:"matching", question:'Lückentext: „Ein Bürgerrecht ist ein gesetzliches [1], das ein [2] seinen [3] zugesteht. In einer [4] gehört das [5] dazu. Es ist ein [6]."', pairs:[{item:"Lücke 1: gesetzliches ___",match:"Recht"},{item:"Lücke 2: das ein ___",match:"Staat"},{item:"Lücke 3: seinen ___",match:"Bürgern"},{item:"Lücke 4: in einer ___",match:"Demokratie"},{item:"Lücke 5: das ___",match:"Wahlrecht"},{item:"Lücke 6: ist ein ___",match:"Grundrecht"}], matchOptions:["Recht","Staat","Bürgern","Demokratie","Wahlrecht","Grundrecht"], explanation:'Lösung: Recht, Staat, Bürgern, Demokratie, Wahlrecht, Grundrecht.' },
-  { id:43, type:"single", question:"Aktives und passives Wahlrecht – was stimmt?", options:["Aktiv = wählen; Passiv = gewählt werden.","Aktiv = gewählt werden; Passiv = wählen.","Aktiv = Wahlpflicht; Passiv = freiwillig.","Beide bedeuten dasselbe."], correct:0, explanation:"Aktiv = selbst wählen. Passiv = sich zur Wahl stellen / gewählt werden." },
-  { id:44, type:"single", question:"Wer ist 2026 Bundeskanzler?", options:["Olaf Scholz (SPD)","Friedrich Merz (CDU)","Robert Habeck (Grüne)","Markus Söder (CSU)"], correct:1, explanation:"Friedrich Merz (CDU) ist seit Mai 2025 Bundeskanzler (Koalition CDU/CSU + SPD)." }
-];
-
-var TOTAL = QUESTIONS.length;
-
-var state = {
-  screen: "start",
-  playerName: "",
-  adminMode: false,
-  questions: [],
-  idx: 0,
-  answered: false,
-  selectedIdx: null,
-  isCorrect: false,
-  correctCount: 0,
-  wrongCount: 0,
-  answers: [],
-  matchSelections: {},
-  matchSubmitted: false,
-  matchUserAnswers: null,
-  leaderboard: null,
-  lbLoading: false,
-  lbError: false,
-  saveStatus: "",
-  saveDebug: "",
-  resultTab: "leaderboard",
-  activeTotal: TOTAL
-};
-
-function shuffle(a) {
-  var b = a.slice();
-  for (var i = b.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = b[i]; b[i] = b[j]; b[j] = tmp;
-  }
-  return b;
-}
-
-function getGrade(pct) {
-  if (pct >= 92) return "1 (Sehr gut)";
-  if (pct >= 81) return "2 (Gut)";
-  if (pct >= 67) return "3 (Befriedigend)";
-  if (pct >= 50) return "4 (Ausreichend)";
-  if (pct >= 30) return "5 (Mangelhaft)";
-  return "6 (Ungenügend)";
-}
-
-function esc(s) {
-  var d = document.createElement("div");
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-function nameOk() {
-  return state.playerName.trim().length >= 2;
-}
-
-function handleNameInput() {
-  var el = document.getElementById("nameField");
-  if (el) state.playerName = el.value;
-  var b1 = document.getElementById("btnStart");
-  var b2 = document.getElementById("btnAdmin");
-  if (b1) b1.disabled = !nameOk();
-  if (b2) b2.disabled = !nameOk();
-}
-
-function doStart(isAdmin) {
-  if (!nameOk()) return;
-  state.adminMode = isAdmin;
-  var qs = shuffle(QUESTIONS);
-  if (isAdmin) qs = qs.slice(0, ADMIN_TEST_COUNT);
-  state.questions = qs;
-  state.activeTotal = qs.length;
-  state.screen = "quiz";
-  state.idx = 0;
-  state.answered = false;
-  state.selectedIdx = null;
-  state.isCorrect = false;
-  state.correctCount = 0;
-  state.wrongCount = 0;
-  state.answers = [];
-  state.matchSelections = {};
-  state.matchSubmitted = false;
-  state.matchUserAnswers = null;
-  state.leaderboard = null;
-  state.lbLoading = false;
-  state.lbError = false;
-  state.saveStatus = "";
-  state.saveDebug = "";
-  state.resultTab = "leaderboard";
-  render();
-}
-
-function doSelectOption(i) {
-  if (state.answered) return;
-  var q = state.questions[state.idx];
-  var correct = (i === q.correct);
-  state.selectedIdx = i;
-  state.isCorrect = correct;
-  state.answered = true;
-  if (correct) state.correctCount++; else state.wrongCount++;
-  state.answers.push({ isCorrect: correct });
-  render();
-}
-
-function doSelectMatch(pi, val) {
-  if (state.matchSubmitted) return;
-  state.matchSelections[pi] = val;
-  render();
-}
-
-function doSubmitMatch() {
-  var q = state.questions[state.idx];
-  if (Object.keys(state.matchSelections).length < q.pairs.length) return;
-  var ok = true;
-  for (var i = 0; i < q.pairs.length; i++) {
-    if (state.matchSelections[i] !== q.pairs[i].match) ok = false;
-  }
-  state.matchSubmitted = true;
-  state.answered = true;
-  state.isCorrect = ok;
-  state.matchUserAnswers = {};
-  for (var k in state.matchSelections) state.matchUserAnswers[k] = state.matchSelections[k];
-  if (ok) state.correctCount++; else state.wrongCount++;
-  state.answers.push({ isCorrect: ok });
-  render();
-}
-
-function doNext() {
-  if (state.idx + 1 >= state.questions.length) {
-    state.screen = "result";
-    saveResult();
-  } else {
-    state.idx++;
-    state.answered = false;
-    state.selectedIdx = null;
-    state.isCorrect = false;
-    state.matchSelections = {};
-    state.matchSubmitted = false;
-    state.matchUserAnswers = null;
-  }
-  render();
-  window.scrollTo(0, 0);
-}
-
-function doSwitchTab(t) {
-  state.resultTab = t;
-  render();
-}
-
-function doRestart() {
-  state.screen = "start";
-  render();
-}
-
-function doRetryLb() {
-  loadLeaderboard();
-}
-
-function saveResult() {
-  var pct = Math.round(state.correctCount / state.activeTotal * 100);
-  var payload = {
-    name: (state.adminMode ? "[TEST] " : "") + state.playerName.trim(),
-    prozent: pct,
-    note: getGrade(pct),
-    richtig: state.correctCount,
-    total: state.activeTotal
-  };
-  state.saveStatus = "saving";
-  state.saveDebug = "";
-  state.lbLoading = true;
-  render();
-
-  fetch(SHEET_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify(payload)
-  }).then(function() {
-    state.saveStatus = "success";
-    state.saveDebug = "";
-    render();
-    setTimeout(function() { loadLeaderboard(); }, 2000);
-  }).catch(function(err) {
-    state.saveStatus = "error";
-    state.saveDebug = "POST Fehler: " + err.message;
-    render();
-    setTimeout(function() { loadLeaderboard(); }, 2000);
-  });
-}
-
-function loadLeaderboard() {
-  state.lbLoading = true;
-  state.lbError = false;
-  render();
-
-  fetch(SHEET_URL + "?t=" + Date.now())
-    .then(function(r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    })
-    .then(function(data) {
-      if (!Array.isArray(data)) throw new Error("Keine gültige Liste erhalten");
-      state.leaderboard = data;
-      state.lbLoading = false;
-      render();
-    })
-    .catch(function(err) {
-      state.lbError = true;
-      state.lbLoading = false;
-      state.saveDebug = "Laden fehlgeschlagen: " + err.message + "\n\nPrüfe:\n1) Apps Script: Bereitstellen > Web-App > Zugriff auf 'Jeder'\n2) doGet()-Funktion im Script vorhanden\n3) Nach Code-Änderung NEUE Bereitstellung erstellen";
-      render();
-    });
-}
-
-function render() {
-  var app = document.getElementById("app");
-  if (state.screen === "start") app.innerHTML = renderStart();
-  else if (state.screen === "quiz") app.innerHTML = renderQuiz();
-  else if (state.screen === "result") app.innerHTML = renderResult();
-}
-
-function renderStart() {
-  var dis = nameOk() ? "" : "disabled";
-  return '<div class="start-screen">' +
-    '<h1>Wirtschafts- und Sozialkunde</h1>' +
-    '<p class="desc">Gesellenprüfung – Übungsversion 2023 (angepasst auf 2026)</p>' +
-    '<p class="meta">' + TOTAL + ' Fragen · Multiple Choice & Zuordnung · mit Erklärungen</p>' +
-    '<div class="name-input-wrap">' +
-    '<label for="nameField">Dein Name</label>' +
-    '<input class="name-input" id="nameField" type="text" placeholder="Vor- und Nachname" maxlength="40" value="' + esc(state.playerName) + '" oninput="handleNameInput()" onkeydown="if(event.key===\'Enter\')doStart(false)">' +
-    '</div>' +
-    '<button class="btn-start" id="btnStart" onclick="doStart(false)" ' + dis + '>Prüfung starten</button>' +
-    '<button class="btn-admin" id="btnAdmin" onclick="doStart(true)" ' + dis + '>⚙ Schnelltest (' + ADMIN_TEST_COUNT + ' Fragen)</button>' +
-    '<div class="hints-box">' +
-    '<div class="label">Hinweise</div>' +
-    '<ul>' +
-    '<li>Die Fragen erscheinen in zufälliger Reihenfolge</li>' +
-    '<li>Nach jeder Antwort erhältst du eine Erklärung</li>' +
-    '<li>Am Ende siehst du deine Note und die Bestenliste</li>' +
-    '<li>Dein Ergebnis wird automatisch gespeichert</li>' +
-    '</ul></div></div>';
-}
-
-function renderQuiz() {
-  var q = state.questions[state.idx];
-  var tot = state.activeTotal;
-  var pct = (state.idx / tot * 100);
-  var h = "";
-
-  if (state.adminMode) h += '<div style="text-align:center;margin-bottom:16px"><span class="admin-badge">⚙ Testmodus</span></div>';
-
-  h += '<div class="progress-wrap"><div class="progress-info"><span>Frage ' + (state.idx + 1) + ' von ' + tot + '</span><div class="stats"><span class="correct">' + state.correctCount + ' richtig</span><span class="wrong">' + state.wrongCount + ' falsch</span></div></div><div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>';
-
-  h += '<div class="question-wrap"><div class="question-text"><span class="question-num">#' + q.id + '</span>' + esc(q.question) + '</div>';
-
-  if (q.type === "single") {
-    h += '<div class="options">';
-    for (var i = 0; i < q.options.length; i++) {
-      var c = "option-btn";
-      if (state.answered) {
-        if (i === q.correct) c += " is-correct";
-        else if (i === state.selectedIdx && !state.isCorrect) c += " is-wrong";
-        else c += " dimmed";
-      }
-      h += '<button class="' + c + '" onclick="doSelectOption(' + i + ')" ' + (state.answered ? "disabled" : "") + '><span class="letter">' + String.fromCharCode(65 + i) + ')</span>' + esc(q.options[i]) + '</button>';
-    }
-    h += '</div>';
-  } else {
-    for (var pi = 0; pi < q.pairs.length; pi++) {
-      var pair = q.pairs[pi];
-      var sel = state.matchSubmitted ? state.matchUserAnswers[pi] : state.matchSelections[pi];
-      var ic = "match-item";
-      if (state.matchSubmitted) ic += (sel === pair.match) ? " is-correct" : " is-wrong";
-      h += '<div class="' + ic + '"><div class="text">' + esc(pair.item) + '</div><div class="match-btns">';
-      for (var oi = 0; oi < q.matchOptions.length; oi++) {
-        var opt = q.matchOptions[oi];
-        var bc = "match-btn";
-        if (sel === opt) {
-          if (state.matchSubmitted) bc += (opt === pair.match) ? " selected-correct" : " selected-wrong";
-          else bc += " selected";
-        }
-        h += '<button class="' + bc + '" onclick="doSelectMatch(' + pi + ',\'' + opt + '\')" ' + (state.matchSubmitted ? "disabled" : "") + '>' + esc(opt) + '</button>';
-      }
-      h += '</div>';
-      if (state.matchSubmitted && sel !== pair.match) h += '<div class="correction">Richtig: ' + esc(pair.match) + '</div>';
-      h += '</div>';
-    }
-    if (!state.matchSubmitted) {
-      var af = Object.keys(state.matchSelections).length >= q.pairs.length;
-      h += '<button class="btn-check ' + (af ? "active" : "") + '" onclick="doSubmitMatch()" ' + (af ? "" : "disabled") + '>Antwort prüfen</button>';
-    }
-  }
-
-  if (state.answered) {
-    var cl = state.isCorrect ? "correct" : "wrong";
-    var vt = state.isCorrect ? "✓ Richtig!" : "✗ Leider falsch";
-    var bt = (state.idx + 1 >= state.questions.length) ? "Auswertung anzeigen" : "Nächste Frage →";
-    h += '<div class="explanation ' + cl + '"><div class="verdict">' + vt + '</div><div class="expl-text">' + esc(q.explanation) + '</div></div>';
-    h += '<div class="next-row"><button class="btn-next" onclick="doNext()">' + bt + '</button></div>';
-  }
-
-  h += '</div>';
-  return h;
-}
-
-function renderResult() {
-  var tot = state.activeTotal;
-  var pct = Math.round(state.correctCount / tot * 100);
-  var grade = getGrade(pct);
-  var emoji = pct >= 81 ? "🏆" : pct >= 67 ? "👍" : pct >= 50 ? "📝" : "📚";
-
-  var sv = "";
-  if (state.saveStatus === "saving") sv = '<div class="save-status"><span class="spinner"></span>Ergebnis wird gespeichert…</div>';
-  else if (state.saveStatus === "success") sv = '<div class="save-status success">✓ Ergebnis gesendet</div>';
-  else if (state.saveStatus === "error") sv = '<div class="save-status error">✗ Speichern fehlgeschlagen</div>';
-
-  var h = '<div class="result-screen">';
-  if (state.adminMode) h += '<div style="margin-bottom:12px"><span class="admin-badge">⚙ Testmodus – Ergebnis als [TEST] markiert</span></div>';
-  h += '<div class="emoji">' + emoji + '</div>';
-  h += '<h1>Geschafft, ' + esc(state.playerName) + '!</h1>';
-  h += '<div class="pct ' + (pct >= 50 ? "pass" : "fail") + '">' + pct + '%</div>';
-  h += '<div class="count">' + state.correctCount + ' von ' + tot + ' Fragen richtig</div>';
-  h += '<div class="grade">Note: ' + grade + '</div>';
-  h += sv;
-
-  h += '<div class="tabs">';
-  h += '<button class="tab-btn ' + (state.resultTab === "leaderboard" ? "active" : "") + '" onclick="doSwitchTab(\'leaderboard\')">🏅 Bestenliste</button>';
-  h += '<button class="tab-btn ' + (state.resultTab === "overview" ? "active" : "") + '" onclick="doSwitchTab(\'overview\')">Deine Antworten</button>';
-  h += '</div>';
-
-  if (state.resultTab === "overview") {
-    h += '<div class="result-section-title">Übersicht aller Fragen</div>';
-    for (var i = 0; i < state.questions.length; i++) {
-      var q = state.questions[i];
-      var a = state.answers[i];
-      var cl2 = (a && a.isCorrect) ? "c" : "w";
-      var v = (a && a.isCorrect) ? "✓ Richtig" : "✗ Falsch";
-      var t = esc(q.question);
-      if (t.length > 90) t = t.substring(0, 90) + "…";
-      h += '<div class="result-item ' + cl2 + '"><div class="q-text"><span class="q-num">#' + q.id + '</span> ' + t + '</div><div class="q-verdict">' + v + '</div></div>';
-    }
-  } else {
-    h += '<div class="leaderboard"><div class="leaderboard-title"><span>🏅</span> Bestenliste</div>';
-    if (state.lbLoading) {
-      h += '<div class="lb-loading"><span class="spinner"></span>Bestenliste wird geladen…</div>';
-    } else if (state.lbError) {
-      h += '<div class="lb-error">Bestenliste konnte nicht geladen werden.<br><a href="#" onclick="doRetryLb();return false;" style="color:#818cf8">Nochmal versuchen</a></div>';
-    } else if (state.leaderboard && state.leaderboard.length > 0) {
-      h += '<table class="lb-table"><thead><tr><th>#</th><th>Name</th><th>Ergebnis</th><th>Note</th><th>Datum</th></tr></thead><tbody>';
-      var medals = { 1: "🥇", 2: "🥈", 3: "🥉" };
-      for (var j = 0; j < state.leaderboard.length; j++) {
-        var e = state.leaderboard[j];
-        var r = j + 1;
-        var m = medals[r] || "";
-        var rc = r === 1 ? "gold" : r === 2 ? "silver" : r === 3 ? "bronze" : "";
-        var pc = e.prozent >= 67 ? "good" : e.prozent >= 50 ? "ok" : "bad";
-        var rawDate = String(e.datum || "");
-        var niceDate = rawDate;
-        try { var dd = new Date(rawDate); if (!isNaN(dd)) niceDate = dd.toLocaleDateString("de-DE"); } catch(x) {}
-        h += '<tr><td><span class="lb-rank ' + rc + '">' + (m ? '<span class="lb-medal">' + m + '</span>' : '') + r + '</span></td>';
-        h += '<td class="lb-name">' + esc(e.name || "") + '</td>';
-        h += '<td class="lb-pct ' + pc + '">' + e.prozent + '%</td>';
-        h += '<td class="lb-note">' + esc(e.note || "") + '</td>';
-        h += '<td class="lb-datum">' + esc(niceDate) + '</td></tr>';
-      }
-      h += '</tbody></table>';
-    } else {
-      h += '<div class="lb-error">Noch keine Einträge vorhanden.</div>';
-    }
-    h += '</div>';
-  }
-
-  h += '<button class="btn-restart" onclick="doRestart()">Nochmal versuchen</button></div>';
-  return h;
-}
-
+var SHEET_URL="https://script.google.com/macros/s/AKfycbzfUqLHUvWHtohFxLoWHd50LHlD1HW5dN_NncsyebgHfyXvzP89BTwM8-Lz5YfAzo1tPg/exec";
+var ADMIN_TEST_COUNT=3;
+var Q=[];
+function a(id,q,opts,c,ex){Q.push({id:id,type:"single",question:q,options:opts,correct:c,explanation:ex});}
+function m(id,q,pairs,mopts,ex){Q.push({id:id,type:"matching",question:q,pairs:pairs,matchOptions:mopts,explanation:ex});}
+a(1,"Was versteht man unter Just-in-Time-Produktion?",["Schlanke Produktion","Zulieferung ohne Zwischenlagerung","Schlanke Unternehmensf\u00FChrung","Arbeitnehmer arbeiten, wann sie wollen","Auslagerung von Produktionsst\u00E4tten"],1,"Just-in-Time (JIT) bedeutet, dass Materialien und Bauteile von Zulieferern genau dann angeliefert werden, wenn sie in der Produktion ben\u00F6tigt werden \u2013 ohne Zwischenlagerung. Das spart Lagerkosten, reduziert gebundenes Kapital und erh\u00F6ht die Effizienz. Bekannte Anwender sind z.B. die Automobilindustrie. Ein Nachteil: Bei Lieferengp\u00E4ssen kann die gesamte Produktion stillstehen.");
+a(2,"Was bedeutet die Abk\u00FCrzung ver.di?",["Vereinte Dienstleistungsgewerkschaft","Verdienstordnung f\u00FCr Ingenieure","Verein Deutscher Ingenieure","Verbraucher Dienstleistungsgewerkschaft","Vertreter der Deutschen Industriegewerkschaft"],0,"ver.di steht f\u00FCr Vereinte Dienstleistungsgewerkschaft und wurde 2001 aus f\u00FCnf Einzelgewerkschaften gegr\u00FCndet. Mit rund 1,9 Millionen Mitgliedern ist sie eine der gr\u00F6\u00DFten Einzelgewerkschaften weltweit. Sie vertritt Besch\u00E4ftigte im Dienstleistungssektor, z.B. Handel, Post, Gesundheitswesen und \u00F6ffentlicher Dienst. Nicht verwechseln mit dem VDI (Verein Deutscher Ingenieure) \u2013 das ist ein Berufsverband, keine Gewerkschaft.");
+a(3,"Die unbeschr\u00E4nkte Gesch\u00E4ftsf\u00E4higkeit beginnt mit \u2026",["18 Jahren.","der Geburt.","25 Jahren.","21 Jahren.","7 Jahren."],0,"Laut \u00A7 2 BGB wird man mit Vollendung des 18. Lebensjahres unbeschr\u00E4nkt gesch\u00E4ftsf\u00E4hig \u2013 man kann dann alle Rechtsgesch\u00E4fte eigenst\u00E4ndig abschlie\u00DFen. Davor gibt es Abstufungen: Kinder unter 7 sind gesch\u00E4ftsunf\u00E4hig (\u00A7 104 BGB), Minderj\u00E4hrige von 7\u201317 sind beschr\u00E4nkt gesch\u00E4ftsf\u00E4hig (\u00A7 106 BGB) und brauchen f\u00FCr die meisten Gesch\u00E4fte die Zustimmung der Eltern. Ausnahme: der Taschengeldparagraph (\u00A7 110 BGB).");
+a(4,"Welcher Sozialversicherungszweig zahlt nur der Arbeitgeber?",["Pflegeversicherung","Krankenversicherung","Unfallversicherung","Arbeitslosenversicherung","Rentenversicherung"],2,"Die f\u00FCnf S\u00E4ulen der Sozialversicherung: Kranken-, Pflege-, Renten-, Arbeitslosen- und Unfallversicherung. Bei vier davon teilen sich Arbeitgeber und Arbeitnehmer die Beitr\u00E4ge parit\u00E4tisch. Die Ausnahme ist die gesetzliche Unfallversicherung (Berufsgenossenschaften) \u2013 diese Beitr\u00E4ge zahlt ausschlie\u00DFlich der Arbeitgeber. Sie sch\u00FCtzt Arbeitnehmer bei Arbeitsunf\u00E4llen und Berufskrankheiten.");
+a(5,"Welcher Begriff entspricht der richterlichen Gewalt?",["Initiative","Exekutive","Legislative","Alternative","Judikative"],4,"Die Judikative (von lat. iudicare = urteilen) ist die richterliche bzw. rechtsprechende Gewalt. Sie ist eine der drei Staatsgewalten: Die Legislative (Bundestag, Bundesrat) macht die Gesetze, die Exekutive (Regierung, Verwaltung, Polizei) f\u00FChrt sie aus, und die Judikative (Gerichte) spricht Recht und kontrolliert die Einhaltung der Gesetze.");
+a(6,"Das Grundrecht, sich mit Bitten und Beschwerden an Volksvertreter zu wenden, hei\u00DFt \u2026",["Asylrecht.","Recht auf Freiz\u00FCgigkeit.","Recht auf freie Entfaltung der Pers\u00F6nlichkeit.","Diskretionsrecht.","Petitionsrecht."],4,"Das Petitionsrecht ist in Artikel 17 des Grundgesetzes verankert. Es gibt jeder Person das Recht, sich einzeln oder gemeinsam mit anderen schriftlich mit Bitten oder Beschwerden an die Volksvertretung (z.B. Bundestag, Landtag) zu wenden. Man muss daf\u00FCr nicht vollj\u00E4hrig oder deutscher Staatsb\u00FCrger sein \u2013 es gilt f\u00FCr alle Menschen.");
+a(7,"Welche Person ist eine juristische Person?",["Verfassungsrichterin","Rechtsanwalt","Staatsanwalt","Fred Feuerstein GmbH","Polizeioberkommissar"],3,"Im Recht unterscheidet man nat\u00FCrliche Personen (Menschen) und juristische Personen (Rechtsgebilde). Eine juristische Person wie eine GmbH, AG oder ein eingetragener Verein kann eigenst\u00E4ndig Vertr\u00E4ge schlie\u00DFen, klagen und verklagt werden. Die Fred Feuerstein GmbH ist als GmbH eine juristische Person. Alle anderen Antworten bezeichnen nat\u00FCrliche Personen, auch wenn sie juristische Berufe aus\u00FCben.");
+a(8,"Unter einem Nachfrage-Monopol versteht man \u2026",["Markt mit einem Anbieter und vielen Nachfragern.","Markt zwischen S\u00FCdpol und Nordpol.","Markt mit vielen Anbietern und einem Nachfrager.","Abk\u00FCrzung f\u00FCr Monopolyk\u00E4ufer.","Markt mit einigen Anbietern und vielen Nachfragern."],2,"Ein Nachfragemonopol (Fachbegriff: Monopson) liegt vor, wenn es nur einen einzigen Nachfrager gibt, aber viele Anbieter. Der Nachfrager hat starke Marktmacht und kann Preise dr\u00FCcken. Typisches Beispiel: der Staat als alleiniger Abnehmer von R\u00FCstungsg\u00FCtern. Das Gegenteil \u2013 ein Anbieter, viele Nachfrager \u2013 ist ein Angebotsmonopol.");
+a(9,"Wer ist der saarl\u00E4ndische Minister f\u00FCr Inneres, Bauen und Sport (2026)?",["Reinhold Jost","Tobias Hans","Anke Rehlinger","Uwe Conradt","Peter Strobel"],0,"Reinhold Jost (SPD) ist seit dem 26. April 2022 saarl\u00E4ndischer Minister f\u00FCr Inneres, Bauen und Sport. Er geh\u00F6rt zur Landesregierung unter Ministerpr\u00E4sidentin Anke Rehlinger (SPD), die seit 2022 mit absoluter SPD-Mehrheit regiert. Zuvor war Jost Minister f\u00FCr Umwelt und Verbraucherschutz.");
+a(10,"Wo muss der Ausbildungsvertrag (Anlagenmechaniker SHK) eingereicht werden?",["Industrie- und Handelskammer","Gewerbeaufsichtsamt","Handwerkskammer","Gesetzliche Krankenversicherung","Berufsgenossenschaft"],2,"Der Beruf Anlagenmechaniker SHK ist ein anerkannter Handwerksberuf. Deshalb muss der Ausbildungsvertrag bei der zust\u00E4ndigen Handwerkskammer (HWK) eingetragen werden \u2013 dort wird auch die Gesellenpr\u00FCfung abgelegt. Die IHK w\u00E4re nur f\u00FCr Industrieberufe zust\u00E4ndig, z.B. Industriemechaniker.");
+a(11,"Welches Gesetz regelt Ausbildungszeit, Verg\u00FCtung, Urlaub und Probezeit?",["Jugendschutzgesetz","Betriebsverfassungsgesetz","Grundgesetz","Jugendarbeitsschutzgesetz","Berufsbildungsgesetz"],4,"Das Berufsbildungsgesetz (BBiG) ist das zentrale Gesetz f\u00FCr die duale Berufsausbildung. Es regelt u.a. Dauer der Ausbildung, H\u00F6he der Verg\u00FCtung, Urlaubsanspruch, Probezeit (1\u20134 Monate), Pflichten von Azubis und Ausbildern sowie die Pr\u00FCfungsordnung. Nicht verwechseln mit dem Jugendarbeitsschutzgesetz (JArbSchG), das speziell den Schutz minderj\u00E4hriger Arbeitnehmer regelt.");
+a(12,"Wer wurde 2022 Thronfolger nach Queen Elizabeth II?",["K\u00F6nig Charles I.","K\u00F6nig Charles III.","K\u00F6nig Charles II.","K\u00F6nig Charles V.","K\u00F6nig Charles IV."],1,"Nach dem Tod von Queen Elizabeth II am 8. September 2022 wurde ihr \u00E4ltester Sohn Prinz Charles automatisch K\u00F6nig. Er w\u00E4hlte den Namen Charles III. Die Kr\u00F6nung fand am 6. Mai 2023 in der Westminster Abbey statt. Die Nummerierung erkl\u00E4rt sich aus der britischen Geschichte: Charles I. regierte 1625\u20131649, Charles II. von 1660\u20131685.");
+a(13,"Was versteht man unter Tarifautonomie?",["Sozialpartner handeln ohne staatliche Einmischung Tarifvertr\u00E4ge aus.","W\u00E4hrend der Laufzeit d\u00FCrfen Arbeitskampfma\u00DFnahmen stattfinden.","Arbeitnehmer und Arbeitgeber werden ausgeschlossen.","Nur mit Staatszustimmung darf ein Tarifvertrag geschlossen werden.","Die L\u00F6hne steigen stetig."],0,"Tarifautonomie ist ein Grundrecht aus Art. 9 Abs. 3 GG (Koalitionsfreiheit). Es bedeutet, dass Gewerkschaften und Arbeitgeberverb\u00E4nde \u2013 die Sozialpartner \u2013 eigenst\u00E4ndig und ohne staatliche Einmischung Tarifvertr\u00E4ge \u00FCber L\u00F6hne, Geh\u00E4lter und Arbeitsbedingungen aushandeln d\u00FCrfen. W\u00E4hrend der Laufzeit eines Tarifvertrags gilt die Friedenspflicht: Es darf nicht gestreikt werden.");
+a(14,"Was sind B\u00FCrgerinitiativen?",["Interessenvereinigungen","Politische Parteien","Soziale Netzwerke","Religi\u00F6se Sekten","Saarl\u00E4ndische Nachbarschaftshilfe"],0,"B\u00FCrgerinitiativen sind freiwillige Zusammenschl\u00FCsse von B\u00FCrgern, die sich f\u00FCr ein konkretes gemeinsames Anliegen einsetzen \u2013 oft auf lokaler Ebene, z.B. gegen den Bau einer Stra\u00DFe oder f\u00FCr den Erhalt eines Spielplatzes. Sie sind keine Parteien und streben keine Regierungsbeteiligung an, sondern wollen gezielt Einfluss auf eine bestimmte politische Entscheidung nehmen.");
+a(15,"Welches Gremium hat 1948 das Grundgesetz ausgearbeitet?",["Bundesverfassungsgericht","Deutscher Bundestag","Kontrollrat","Bundeskanzler und Bundespr\u00E4sident","Parlamentarischer Rat"],4,"Der Parlamentarische Rat trat am 1. September 1948 in Bonn zusammen und erarbeitete bis zum 23. Mai 1949 das Grundgesetz. Er bestand aus 65 Mitgliedern, die von den Landesparlamenten der westlichen Besatzungszonen gew\u00E4hlt wurden. Pr\u00E4sident war Konrad Adenauer (CDU), der sp\u00E4ter erster Bundeskanzler wurde.");
+a(16,"Welches sind die drei volkswirtschaftlichen Produktionsfaktoren?",["Energie, Arbeit, Rohstoffe","Kapital, Rohstoffe, Arbeit","Arbeit, Kapital, Organisation","Arbeit, Boden, Energie","Arbeit, Boden, Kapital"],4,"Die drei klassischen Produktionsfaktoren nach Adam Smith: Arbeit (menschliche Arbeitsleistung), Boden (nat\u00FCrliche Ressourcen, Grundst\u00FCcke, Rohstoffe) und Kapital (Maschinen, Werkzeuge, Geb\u00E4ude, Investitionsgeld). Aus diesen drei Faktoren werden alle G\u00FCter und Dienstleistungen einer Volkswirtschaft hergestellt.");
+a(17,"Was ist das duale Berufsausbildungssystem?",["Ministerium und Berufsschulen verantwortlich.","System der Abfallentsorgung.","Ausbildung dauert immer zweieinhalb Jahre.","Markt mit zwei Anbietern und Nachfragern.","Ausbildung an zwei Lernorten: Betrieb und Berufsschule."],4,"Dual kommt vom Lateinischen und bedeutet zweifach. Die Ausbildung findet an zwei Lernorten statt: Im Betrieb lernt man die Praxis (z.B. Rohre verlegen, Heizungen installieren), in der Berufsschule die Theorie (z.B. Fachrechnen, WiSo, Werkstoffkunde). Dieses System ist international als German Model bekannt und wird weltweit als vorbildlich angesehen.");
+a(18,"Was ist der Generationenvertrag?",["Rentenzahlungen bei Generationenwechsel neu geregelt.","J\u00FCngere sichern regelm\u00E4\u00DFige Rentenerh\u00F6hung.","Beitr\u00E4ge werden angesammelt und im Alter ausgezahlt.","Erwerbst\u00E4tige finanzieren mit Beitr\u00E4gen die Renten der Ruhest\u00E4ndler.","Rentenzahlungen werden verzinst angelegt."],3,"Der Generationenvertrag beschreibt das Umlageverfahren der gesetzlichen Rentenversicherung: Die Erwerbst\u00E4tigen zahlen mit ihren Beitr\u00E4gen direkt die Renten der heutigen Rentner. Es wird kein Geld angespart. Daf\u00FCr erwartet man, dass die n\u00E4chste Generation sp\u00E4ter die eigenen Renten finanziert. Problematisch bei sinkenden Geburtenraten: Immer weniger Beitragszahler m\u00FCssen immer mehr Rentner finanzieren.");
+a(19,"Was ist F\u00F6deralismus?",["Zusammenlegung von Rheinland-Pfalz und Saarland","Parlamentarisches System","Dreiteilung der Staatsgewalt","F\u00F6rdern sozialer Projekte","Eigenstaatlichkeit der L\u00E4nder innerhalb eines Bundesstaates"],4,"F\u00F6deralismus bedeutet, dass die 16 Bundesl\u00E4nder innerhalb des Bundesstaates eine eigene Staatlichkeit besitzen \u2013 mit eigener Landesverfassung, Landesregierung und Gesetzgebung in bestimmten Bereichen (z.B. Bildung, Polizei, Kultur). Das GG legt fest, welche Aufgaben Bund und L\u00E4nder \u00FCbernehmen. Die L\u00E4nder wirken \u00FCber den Bundesrat an der Bundesgesetzgebung mit.");
+a(20,"Wann k\u00F6nnen politische Parteien verboten werden?",["Wenn sie unbequem werden.","Wenn sie f\u00FCr direkte Demokratie werben.","Wenn sie die freiheitlich-demokratische Grundordnung gef\u00E4hrden.","Wenn sie Finanzierung nicht offenlegen.","Wenn sie unter 5 % bleiben."],2,"Nach Art. 21 Abs. 2 GG k\u00F6nnen Parteien verboten werden, wenn sie darauf abzielen, die freiheitlich-demokratische Grundordnung zu beeintr\u00E4chtigen oder zu beseitigen. Wichtig: Nur das Bundesverfassungsgericht darf ein solches Verbot aussprechen \u2013 nicht die Regierung. In der Geschichte der BRD wurden bisher zwei Parteien verboten: die SRP (1952) und die KPD (1956).");
+a(21,"Welches ist ein existenzielles Bed\u00FCrfnis?",["Neuestes Smartphone","Nahrung und Kleidung","Schickes Restaurant","Markenkleidung","Meister-Fortbildung"],1,"Man unterscheidet drei Arten von Bed\u00FCrfnissen: Existenzbed\u00FCrfnisse (Grundbed\u00FCrfnisse) wie Nahrung, Kleidung und Wohnung sichern das \u00DCberleben. Kulturbed\u00FCrfnisse (z.B. Bildung, Unterhaltung) gehen dar\u00FCber hinaus. Luxusbed\u00FCrfnisse (z.B. teure Markenkleidung) sind W\u00FCnsche weit \u00FCber das Notwendige. Ein Smartphone kann je nach Situation Kultur- oder Luxusbed\u00FCrfnis sein.");
+a(22,"Was ist Datenschutz?",["Sichere Datentr\u00E4ger","\u00DCberwachung durch Beh\u00F6rden","Schutz vor unerlaubter Verwendung pers\u00F6nlicher Daten","Datenspeicherung gegen Missbrauch","Daten an Dritte weiterleiten"],2,"Datenschutz bezeichnet den Schutz von Personen vor dem Missbrauch ihrer personenbezogenen Daten (Name, Adresse, Gesundheitsdaten, Kontonummer). In der EU regelt die DSGVO, dass personenbezogene Daten nur mit Einwilligung oder gesetzlicher Grundlage verarbeitet werden d\u00FCrfen. Das zugrundeliegende Grundrecht ist das Recht auf informationelle Selbstbestimmung.");
+a(23,"Wie wird Markt richtig definiert?",["Arbeitsmarkt f\u00FCr Anlagenmechaniker.","Ort zum Pressfittings-Kauf.","Ort, an dem Nachfrage und Angebot regelm\u00E4\u00DFig aufeinander treffen.","Betriebe bieten G\u00FCter an.","Reguliert sich nur \u00FCber das Angebot."],2,"In der VWL ist ein Markt jeder Ort \u2013 auch virtuell wie das Internet \u2013 an dem Angebot und Nachfrage regelm\u00E4\u00DFig aufeinander treffen und sich Preise bilden. Es gibt viele M\u00E4rkte: Arbeitsmarkt, G\u00FCtermarkt, Kapitalmarkt, Immobilienmarkt. Die anderen Antworten beschreiben nur Teilaspekte, nicht die vollst\u00E4ndige Definition.");
+a(24,"Staat plant Produktion, Preise und Kosten zentral. Welche Wirtschaftsform?",["Planwirtschaft","Soziale Marktwirtschaft","Angebot-Nachfrage-Wirtschaft","Kartellwirtschaft","Freie Marktwirtschaft"],0,"In einer Planwirtschaft (Zentralverwaltungswirtschaft) legt der Staat zentral fest, was, wie viel und f\u00FCr wen produziert wird. Privatunternehmen gibt es kaum, Preise werden staatlich festgelegt. Historisches Beispiel: DDR und Sowjetunion. Deutschland hat eine Soziale Marktwirtschaft \u2013 eine Mischform mit Marktfreiheit und sozialem Ausgleich.");
+a(25,"Wo stehen die Grundrechte?",["Im BGB","Im Strafgesetzbuch","Im Grundgesetz","Im Handelsgesetzbuch","Im Grundrechtsgesetzbuch"],2,"Die Grundrechte stehen in den Artikeln 1\u201319 des Grundgesetzes (GG). Sie sind unmittelbar geltendes Recht und binden Gesetzgebung, Verwaltung und Rechtsprechung (Art. 1 Abs. 3 GG). Beispiele: Menschenw\u00FCrde (Art. 1), freie Entfaltung (Art. 2), Gleichheit (Art. 3), Meinungsfreiheit (Art. 5). Ein Grundrechtsgesetzbuch gibt es nicht.");
+a(26,"Was sagt das GG \u00FCber die Familie?",["Kein \u00FCbergeordneter Stellenwert.","Gro\u00DFfamilien zahlen keine Steuern.","Freibad-Verg\u00FCnstigungen.","Ehe und Familie unter besonderem Schutz der staatlichen Ordnung.","Nur Familien d\u00FCrfen Kinder erziehen."],3,"Art. 6 Abs. 1 GG: Ehe und Familie stehen unter dem besonderen Schutze der staatlichen Ordnung. Der Staat muss Ehe und Familie f\u00F6rdern \u2013 z.B. durch Kindergeld, Ehegattensplitting und Elterngeld. Au\u00DFerdem regelt Art. 6 das Recht und die Pflicht der Eltern zur Erziehung.");
+a(27,"Welche Aussage \u00FCber Bed\u00FCrfnisse ist richtig?",["Bleiben stets gleich.","Kosten immer Geld.","\u00C4ndern sich und werden durch Werbung beeinflusst.","Entwicklungsl\u00E4nder haben keine.","Durch Haushaltsbuch immer befriedigt."],2,"Bed\u00FCrfnisse sind menschliche W\u00FCnsche und Mangelempfindungen. Sie ver\u00E4ndern sich st\u00E4ndig \u2013 beeinflusst durch Werbung, gesellschaftliche Trends und technologischen Fortschritt. Vor 20 Jahren hatte niemand das Bed\u00FCrfnis nach einem Smartphone. Bed\u00FCrfnisse kosten nicht immer Geld (z.B. frische Luft), und alle Menschen weltweit haben Bed\u00FCrfnisse.");
+a(28,"Welche Steuer ist eine direkte Steuer?",["Tabaksteuer","Einkommensteuer","Mehrwertsteuer","Energiesteuer","Schaumweinsteuer"],1,"Bei einer direkten Steuer sind Steuerschuldner (wer zahlt) und Steuertr\u00E4ger (wen sie belastet) dieselbe Person. Die Einkommensteuer zahlt man direkt ans Finanzamt. Bei indirekten Steuern wie Mehrwertsteuer oder Tabaksteuer zahlt der H\u00E4ndler die Steuer, gibt sie aber \u00FCber den Preis an den Verbraucher weiter.");
+a(29,"Grundgedanke der Gewaltenteilung?",["Staatsgewalt vom Volk, nicht teilbar.","Polizei und Justiz teilen Strafgewalt.","Richter verurteilen ohne Verfahren.","Parlament, Regierung, Gerichte kontrollieren sich gegenseitig.","Nur Exekutive und Judikative getrennt."],3,"Die Gewaltenteilung (nach Montesquieu) verteilt die Staatsgewalt auf drei unabh\u00E4ngige Organe: Legislative (Parlament \u2013 macht Gesetze), Exekutive (Regierung/Verwaltung \u2013 f\u00FChrt aus) und Judikative (Gerichte \u2013 spricht Recht). Ziel: Machtmissbrauch verhindern durch gegenseitige Kontrolle und Begrenzung.");
+a(30,"Was bedeutet Demokratie?",["Herrschaft des Einzelnen","Volksherrschaft","Herrschaft der Industrie","Herrschaft einer Partei","Monarchie"],1,"Demokratie stammt aus dem Griechischen: demos (Volk) + kratein (herrschen) = Volksherrschaft. Alle Staatsgewalt geht vom Volk aus (Art. 20 Abs. 2 GG). Das Volk \u00FCbt seine Macht durch Wahlen und Abstimmungen aus. Wichtige Merkmale: freie Wahlen, Meinungsfreiheit, Pressefreiheit, Gewaltenteilung und Minderheitenschutz.");
+a(31,"Welche Konjunktur-Erl\u00E4uterung ist NICHT richtig?",["Rezession = Tiefstand","Boom = Hochkonjunktur","Expansion = Aufschwung","Rezession = Abschwung","Depression = Tiefstand"],0,"Die vier Konjunkturphasen: 1) Expansion (Aufschwung) \u2013 Wirtschaft w\u00E4chst, 2) Boom (Hochkonjunktur) \u2013 H\u00F6hepunkt, 3) Rezession (Abschwung) \u2013 Wirtschaft schrumpft, 4) Depression (Tiefstand). Der Fehler: Rezession = Tiefstand ist falsch. Rezession bedeutet Abschwung, der Tiefstand hei\u00DFt Depression.");
+a(32,"Welche Aufz\u00E4hlung enth\u00E4lt nur Verbrauchssteuern?",["Einkommensteuer, Kfz-Steuer, K\u00F6rperschaftsteuer","Gewerbesteuer, Schaumweinsteuer, Lohnsteuer","Kaffeesteuer, Erbschaftsteuer, Grundsteuer","Getr\u00E4nkesteuer, Zinsabschlagsteuer, Einkommensteuer","Tabaksteuer, Biersteuer, Mineral\u00F6lsteuer"],4,"Verbrauchssteuern werden auf den Verbrauch bestimmter Waren erhoben und \u00FCber den Preis weitergegeben. Tabaksteuer, Biersteuer und Mineral\u00F6lsteuer sind reine Verbrauchssteuern. In den anderen Antworten sind immer Nicht-Verbrauchssteuern dabei: z.B. Einkommensteuer, Lohnsteuer (direkt), Erbschaftsteuer oder Gewerbesteuer.");
+a(33,"Welche Aufz\u00E4hlung enth\u00E4lt nur einseitige Rechtsgesch\u00E4fte?",["Schuldanerkenntnis, Mietvertrag, Leihvertrag","K\u00FCndigung, Mietvertrag, Testament","K\u00FCndigung, Testament, Mahnung","Pachtvertrag, Testament, Mahnung","Leihvertrag, Mahnung, Erbvertrag"],2,"Ein einseitiges Rechtsgesch\u00E4ft erfordert nur eine Willenserkl\u00E4rung: K\u00FCndigung spricht man einseitig aus, ein Testament erstellt man allein, eine Mahnung schickt der Gl\u00E4ubiger einseitig. Vertr\u00E4ge (Miet-, Leih-, Pacht-, Erbvertrag) sind zweiseitige Rechtsgesch\u00E4fte \u2013 sie brauchen die \u00DCbereinstimmung von mindestens zwei Parteien.");
+a(34,"Bester Schutz gegen Arbeitslosigkeit?",["Gewerkschaft","F\u00FChrerschein","Partei","Zweite Ausbildung","Weiterbildung im eigenen Beruf"],4,"Lebenslanges Lernen und berufliche Weiterbildung im eigenen Fachgebiet sind der wirksamste Schutz vor Arbeitslosigkeit. Wer sich regelm\u00E4\u00DFig fortbildet, bleibt fachlich auf dem neuesten Stand und ist f\u00FCr Arbeitgeber besonders wertvoll. Im SHK-Bereich z.B. durch Schulungen zu W\u00E4rmepumpen, Smart-Home-Technik oder neuen Normen.");
+a(35,"Warum ist der 3. Oktober Nationalfeiertag?",["Mauerfall","Wiedervereinigung","Aufl\u00F6sung der Sowjetunion","NATO-Aufnahme","Ende des 2. Weltkriegs"],1,"Am 3. Oktober 1990 trat die DDR offiziell der Bundesrepublik bei \u2013 die Deutsche Wiedervereinigung. Der 3. Oktober ist seitdem Tag der Deutschen Einheit. Achtung: Der Mauerfall war am 9. November 1989, also fast ein Jahr vorher. Der 9. November wurde bewusst nicht als Feiertag gew\u00E4hlt, da er auch an die Reichspogromnacht 1938 erinnert.");
+m(36,"Ordnen Sie die Beispiele der Wirtschaftsform zu (FMW / SMW / ZPW).",[{item:"Kartellgesetze gegen Monopolbildung",match:"SMW"},{item:"Nur die billigsten Arbeitskr\u00E4fte haben eine Chance",match:"FMW"},{item:"Schutz der wirtschaftlich Schwachen",match:"SMW"},{item:"Gesamter Wirtschaftsablauf staatlich geplant",match:"ZPW"},{item:"Freies Unternehmertum nicht zugelassen",match:"ZPW"},{item:"Vollkommene Konkurrenz zwischen Erzeuger und Verbraucher",match:"FMW"}],["FMW","SMW","ZPW"],"Freie Marktwirtschaft (FMW): Kein staatlicher Eingriff, vollkommene Konkurrenz \u2013 ohne sozialen Schutz. Soziale Marktwirtschaft (SMW): Markt mit staatlicher Regulierung zum Schutz der Schwachen (Kartellgesetze, Mindestlohn, Sozialversicherung) \u2013 das System in Deutschland. Zentrale Planwirtschaft (ZPW): Staat plant und kontrolliert alles, kein Privatunternehmertum \u2013 z.B. die fr\u00FChere DDR.");
+a(37,"Warum h\u00E4ngt Gesch\u00E4ftsf\u00E4higkeit vom Alter ab?",["Eltern haften bis 18.","Eigenverantwortliches Handeln braucht Einsichtsf\u00E4higkeit und Alter.","GG entzieht Minderj\u00E4hrigen Vertragsrecht.","Erst ab 18 darf man ein Konto er\u00F6ffnen."],1,"Die Abstufung dient dem Schutz junger Menschen. Eigenverantwortliches Handeln \u2013 also Vertr\u00E4ge schlie\u00DFen und rechtliche Verpflichtungen eingehen \u2013 setzt voraus, dass man die Tragweite einsch\u00E4tzen kann. Diese Einsichtsf\u00E4higkeit w\u00E4chst mit dem Alter. Deshalb: gesch\u00E4ftsunf\u00E4hig (unter 7), beschr\u00E4nkt gesch\u00E4ftsf\u00E4hig (7\u201317), voll gesch\u00E4ftsf\u00E4hig (ab 18).");
+m(38,"Ordnen Sie die Begriffe den Erkl\u00E4rungen zu.",[{item:"Der Staat hilft B\u00FCrgern in Not.",match:"Sozialstaat"},{item:"Das Volk regiert sich selbst durch Wahlen.",match:"Demokratie"},{item:"Zusammenleben durch Recht und Gesetz geregelt.",match:"Rechtsstaat"}],["Demokratie","Rechtsstaat","Sozialstaat"],"Deutschland vereint alle drei Staatsprinzipien: Als Sozialstaat sch\u00FCtzt es Schwache durch Sozialversicherung und B\u00FCrgergeld. Als Demokratie geht alle Staatsgewalt vom Volk aus. Als Rechtsstaat ist alles Handeln an Recht und Gesetz gebunden. Diese Prinzipien stehen in Art. 20 GG und sind durch die Ewigkeitsklausel (Art. 79 Abs. 3 GG) gesch\u00FCtzt.");
+a(39,"Welche Koalition regiert seit 2025 auf Bundesebene?",["SPD, Gr\u00FCne, FDP (Ampel)","CDU/CSU und SPD (Schwarz-Rot)","CDU/CSU und Gr\u00FCne","SPD und Gr\u00FCne"],1,"Nach dem Zerbrechen der Ampelkoalition (SPD, Gr\u00FCne, FDP) Ende 2024 und der vorgezogenen Bundestagswahl im Februar 2025 bildeten CDU/CSU und SPD eine Koalition unter Kanzler Friedrich Merz (CDU). Diese wird als Schwarz-Rot bezeichnet \u2013 nach den Parteifarben. Vizekanzler und Finanzminister ist Lars Klingbeil (SPD).");
+m(40,"Ordnen Sie zu: Beitr\u00E4ge, Steuern, Geb\u00FChren oder Z\u00F6lle.",[{item:"Ausstellung eines F\u00FChrerscheins",match:"Geb\u00FChren"},{item:"Hallenbad-Nutzung",match:"Geb\u00FChren"},{item:"Arbeitgeberanteil Sozialversicherung",match:"Beitr\u00E4ge"},{item:"Zahlung nach Kfz-Zulassung",match:"Steuern"},{item:"Entgelt bei Warenimport an der Grenze",match:"Z\u00F6lle"}],["Beitr\u00E4ge","Steuern","Geb\u00FChren","Z\u00F6lle"],"Geb\u00FChren: Gegenleistung f\u00FCr eine staatliche Leistung (F\u00FChrerschein, Hallenbad). Beitr\u00E4ge: Finanzieren die Sozialversicherungen \u2013 AG und AN teilen sich die meisten. Steuern: Abgaben ohne direkte Gegenleistung (Kfz-Steuer, Einkommensteuer). Z\u00F6lle: Abgaben auf importierte Waren an der Grenze.");
+a(41,"Was bedeutet die 5 %-Sperrklausel?",["Halbe Sitze unter 5 %.","Verhindert Einzug kleiner Parteien, um Zersplitterung zu vermeiden.","Parteien unter 5 % werden verboten.","Gilt nur bei Landtagswahlen."],1,"Die 5 %-Sperrklausel bedeutet, dass eine Partei mindestens 5 % der Zweitstimmen braucht, um in den Bundestag einzuziehen. Diese Regel ist eine Lehre aus der Weimarer Republik, wo extreme Zersplitterung stabile Regierungen verhinderte. Ausnahme: Gewinnt eine Partei mindestens drei Direktmandate, zieht sie auch ohne 5 % ein (Grundmandatsklausel).");
+m(42,"L\u00FCckentext: Ein B\u00FCrgerrecht ist ein gesetzliches [1], das ein [2] seinen [3] zugesteht. In einer [4] geh\u00F6rt das [5] dazu. Es ist ein [6].",[{item:"L\u00FCcke 1: gesetzliches ___",match:"Recht"},{item:"L\u00FCcke 2: das ein ___",match:"Staat"},{item:"L\u00FCcke 3: seinen ___",match:"B\u00FCrgern"},{item:"L\u00FCcke 4: in einer ___",match:"Demokratie"},{item:"L\u00FCcke 5: das ___",match:"Wahlrecht"},{item:"L\u00FCcke 6: ist ein ___",match:"Grundrecht"}],["Recht","Staat","B\u00FCrgern","Demokratie","Wahlrecht","Grundrecht"],"L\u00F6sung: Recht, Staat, B\u00FCrgern, Demokratie, Wahlrecht, Grundrecht. B\u00FCrgerrechte gelten \u2013 anders als Menschenrechte \u2013 nur f\u00FCr Staatsangeh\u00F6rige. Das Wahlrecht steht nur deutschen Staatsb\u00FCrgern zu (Ausnahme: EU-B\u00FCrger bei Kommunalwahlen).");
+a(43,"Aktives und passives Wahlrecht \u2013 was stimmt?",["Aktiv = w\u00E4hlen; Passiv = gew\u00E4hlt werden.","Aktiv = gew\u00E4hlt werden; Passiv = w\u00E4hlen.","Aktiv = Wahlpflicht; Passiv = freiwillig.","Beide bedeuten dasselbe."],0,"Aktives Wahlrecht = selbst w\u00E4hlen gehen (bei Bundestagswahlen ab 18). Passives Wahlrecht = sich als Kandidat aufstellen lassen und gew\u00E4hlt werden k\u00F6nnen. Merkhilfe: Aktiv = man tut selbst etwas (w\u00E4hlen), passiv = man l\u00E4sst etwas mit sich geschehen (gew\u00E4hlt werden).");
+a(44,"Wer ist 2026 Bundeskanzler?",["Olaf Scholz (SPD)","Friedrich Merz (CDU)","Robert Habeck (Gr\u00FCne)","Markus S\u00F6der (CSU)"],1,"Friedrich Merz (CDU) ist seit Mai 2025 Bundeskanzler. Er f\u00FChrt eine Koalition aus CDU/CSU und SPD (Schwarz-Rot). Sein Vorg\u00E4nger Olaf Scholz (SPD) regierte 2021\u20132025 mit der Ampelkoalition. Robert Habeck (Gr\u00FCne) war unter Scholz Vizekanzler und Wirtschaftsminister, ist seit 2025 nicht mehr in der Regierung.");
+var QUESTIONS=Q;
+var TOTAL=QUESTIONS.length;
+var state={screen:"start",playerName:"",adminMode:false,questions:[],idx:0,answered:false,selectedIdx:null,isCorrect:false,correctCount:0,wrongCount:0,answers:[],matchSelections:{},matchSubmitted:false,matchUserAnswers:null,leaderboard:null,lbLoading:false,lbError:false,saveStatus:"",resultTab:"leaderboard",activeTotal:TOTAL};
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function getGrade(p){if(p>=92)return"1 (Sehr gut)";if(p>=81)return"2 (Gut)";if(p>=67)return"3 (Befriedigend)";if(p>=50)return"4 (Ausreichend)";if(p>=30)return"5 (Mangelhaft)";return"6 (Ungen\u00FCgend)";}
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+function nameOk(){return state.playerName.trim().length>=2;}
+function handleNameInput(){var el=document.getElementById("nameField");if(el)state.playerName=el.value;var b1=document.getElementById("btnStart");var b2=document.getElementById("btnAdmin");if(b1)b1.disabled=!nameOk();if(b2)b2.disabled=!nameOk();}
+function doStart(isAdmin){if(!nameOk())return;state.adminMode=isAdmin;var qs=shuffle(QUESTIONS);if(isAdmin)qs=qs.slice(0,ADMIN_TEST_COUNT);state.questions=qs;state.activeTotal=qs.length;state.screen="quiz";state.idx=0;state.answered=false;state.selectedIdx=null;state.isCorrect=false;state.correctCount=0;state.wrongCount=0;state.answers=[];state.matchSelections={};state.matchSubmitted=false;state.matchUserAnswers=null;state.leaderboard=null;state.lbLoading=false;state.lbError=false;state.saveStatus="";state.resultTab="leaderboard";render();}
+function doSelectOption(i){if(state.answered)return;var q=state.questions[state.idx];var c=(i===q.correct);state.selectedIdx=i;state.isCorrect=c;state.answered=true;if(c)state.correctCount++;else state.wrongCount++;state.answers.push({isCorrect:c});render();}
+function doSelectMatch(pi,val){if(state.matchSubmitted)return;state.matchSelections[pi]=val;render();}
+function doSubmitMatch(){var q=state.questions[state.idx];if(Object.keys(state.matchSelections).length<q.pairs.length)return;var ok=true;for(var i=0;i<q.pairs.length;i++){if(state.matchSelections[i]!==q.pairs[i].match)ok=false;}state.matchSubmitted=true;state.answered=true;state.isCorrect=ok;state.matchUserAnswers={};for(var k in state.matchSelections)state.matchUserAnswers[k]=state.matchSelections[k];if(ok)state.correctCount++;else state.wrongCount++;state.answers.push({isCorrect:ok});render();}
+function doNext(){if(state.idx+1>=state.questions.length){state.screen="result";saveResult();}else{state.idx++;state.answered=false;state.selectedIdx=null;state.isCorrect=false;state.matchSelections={};state.matchSubmitted=false;state.matchUserAnswers=null;}render();window.scrollTo(0,0);}
+function doSwitchTab(t){state.resultTab=t;render();}
+function doRestart(){state.screen="start";render();}
+function doRetryLb(){loadLeaderboard();}
+function saveResult(){var pct=Math.round(state.correctCount/state.activeTotal*100);var payload={name:(state.adminMode?"[TEST] ":"")+state.playerName.trim(),prozent:pct,note:getGrade(pct),richtig:state.correctCount,total:state.activeTotal};state.saveStatus="saving";state.lbLoading=true;render();fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)}).then(function(){state.saveStatus="success";render();setTimeout(function(){loadLeaderboard();},2000);}).catch(function(){state.saveStatus="error";render();setTimeout(function(){loadLeaderboard();},2000);});}
+function loadLeaderboard(){state.lbLoading=true;state.lbError=false;render();fetch(SHEET_URL+"?t="+Date.now()).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(data){if(!Array.isArray(data))throw new Error("err");state.leaderboard=data;state.lbLoading=false;render();}).catch(function(){state.lbError=true;state.lbLoading=false;render();});}
+function render(){var app=document.getElementById("app");if(state.screen==="start")app.innerHTML=renderStart();else if(state.screen==="quiz")app.innerHTML=renderQuiz();else if(state.screen==="result")app.innerHTML=renderResult();}
+function renderStart(){var dis=nameOk()?"":"disabled";return'<div class="start-screen"><h1>Wirtschafts- und Sozialkunde</h1><p class="desc">Gesellenpr\u00FCfung \u2013 \u00DCbungsversion 2026</p><p class="meta">'+TOTAL+' Fragen \u00B7 Multiple Choice & Zuordnung \u00B7 mit Erkl\u00E4rungen</p><div class="name-input-wrap"><label for="nameField">Dein Name</label><input class="name-input" id="nameField" type="text" placeholder="Vor- und Nachname" maxlength="40" value="'+esc(state.playerName)+'" oninput="handleNameInput()" onkeydown="if(event.key===\'Enter\')doStart(false)"></div><button class="btn-start" id="btnStart" onclick="doStart(false)" '+dis+'>Pr\u00FCfung starten</button><button class="btn-admin" id="btnAdmin" onclick="doStart(true)" '+dis+'>\u2699 Schnelltest ('+ADMIN_TEST_COUNT+' Fragen)</button><div class="hints-box"><div class="label">Hinweise</div><ul><li>Die Fragen erscheinen in zuf\u00E4lliger Reihenfolge</li><li>Nach jeder Antwort erh\u00E4ltst du eine Erkl\u00E4rung</li><li>Am Ende siehst du deine Note und die Bestenliste</li><li>Dein Ergebnis wird automatisch gespeichert</li></ul></div></div>';}
+function renderQuiz(){var q=state.questions[state.idx];var tot=state.activeTotal;var pct=(state.idx/tot*100);var h="";if(state.adminMode)h+='<div style="text-align:center;margin-bottom:16px"><span class="admin-badge">\u2699 Testmodus</span></div>';h+='<div class="progress-wrap"><div class="progress-info"><span>Frage '+(state.idx+1)+' von '+tot+'</span><div class="stats"><span class="correct">'+state.correctCount+' richtig</span><span class="wrong">'+state.wrongCount+' falsch</span></div></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>';h+='<div class="question-wrap"><div class="question-text"><span class="question-num">#'+q.id+'</span>'+esc(q.question)+'</div>';if(q.type==="single"){h+='<div class="options">';for(var i=0;i<q.options.length;i++){var c="option-btn";if(state.answered){if(i===q.correct)c+=" is-correct";else if(i===state.selectedIdx&&!state.isCorrect)c+=" is-wrong";else c+=" dimmed";}h+='<button class="'+c+'" onclick="doSelectOption('+i+')" '+(state.answered?"disabled":"")+' ><span class="letter">'+String.fromCharCode(65+i)+')</span>'+esc(q.options[i])+'</button>';}h+='</div>';}else{for(var pi=0;pi<q.pairs.length;pi++){var pair=q.pairs[pi];var sel=state.matchSubmitted?state.matchUserAnswers[pi]:state.matchSelections[pi];var ic="match-item";if(state.matchSubmitted)ic+=(sel===pair.match)?" is-correct":" is-wrong";h+='<div class="'+ic+'"><div class="text">'+esc(pair.item)+'</div><div class="match-btns">';for(var oi=0;oi<q.matchOptions.length;oi++){var opt=q.matchOptions[oi];var bc="match-btn";if(sel===opt){if(state.matchSubmitted)bc+=(opt===pair.match)?" selected-correct":" selected-wrong";else bc+=" selected";}h+='<button class="'+bc+'" onclick="doSelectMatch('+pi+',\''+opt+'\')" '+(state.matchSubmitted?"disabled":"")+'>'+esc(opt)+'</button>';}h+='</div>';if(state.matchSubmitted&&sel!==pair.match)h+='<div class="correction">Richtig: '+esc(pair.match)+'</div>';h+='</div>';}if(!state.matchSubmitted){var af=Object.keys(state.matchSelections).length>=q.pairs.length;h+='<button class="btn-check '+(af?"active":"")+'" onclick="doSubmitMatch()" '+(af?"":"disabled")+'>Antwort pr\u00FCfen</button>';}}if(state.answered){var cl=state.isCorrect?"correct":"wrong";var vt=state.isCorrect?"\u2713 Richtig!":"\u2717 Leider falsch";var bt=(state.idx+1>=state.questions.length)?"Auswertung anzeigen":"N\u00E4chste Frage \u2192";h+='<div class="explanation '+cl+'"><div class="verdict">'+vt+'</div><div class="expl-text">'+esc(q.explanation)+'</div></div><div class="next-row"><button class="btn-next" onclick="doNext()">'+bt+'</button></div>';}h+='</div>';return h;}
+function renderResult(){var tot=state.activeTotal;var pct=Math.round(state.correctCount/tot*100);var grade=getGrade(pct);var emoji=pct>=81?"\uD83C\uDFC6":pct>=67?"\uD83D\uDC4D":pct>=50?"\uD83D\uDCDD":"\uD83D\uDCDA";var sv="";if(state.saveStatus==="saving")sv='<div class="save-status"><span class="spinner"></span>Ergebnis wird gespeichert\u2026</div>';else if(state.saveStatus==="success")sv='<div class="save-status success">\u2713 Ergebnis gesendet</div>';else if(state.saveStatus==="error")sv='<div class="save-status error">\u2717 Speichern fehlgeschlagen</div>';var h='<div class="result-screen">';if(state.adminMode)h+='<div style="margin-bottom:12px"><span class="admin-badge">\u2699 Testmodus</span></div>';h+='<div class="emoji">'+emoji+'</div><h1>Geschafft, '+esc(state.playerName)+'!</h1><div class="pct '+(pct>=50?"pass":"fail")+'">'+pct+'%</div><div class="count">'+state.correctCount+' von '+tot+' Fragen richtig</div><div class="grade">Note: '+grade+'</div>'+sv;h+='<div class="tabs"><button class="tab-btn '+(state.resultTab==="leaderboard"?"active":"")+'" onclick="doSwitchTab(\'leaderboard\')">\uD83C\uDFC5 Bestenliste</button><button class="tab-btn '+(state.resultTab==="overview"?"active":"")+'" onclick="doSwitchTab(\'overview\')">Deine Antworten</button></div>';if(state.resultTab==="overview"){h+='<div class="result-section-title">\u00DCbersicht</div>';for(var i=0;i<state.questions.length;i++){var q2=state.questions[i];var a2=state.answers[i];var cl2=(a2&&a2.isCorrect)?"c":"w";var v2=(a2&&a2.isCorrect)?"\u2713 Richtig":"\u2717 Falsch";var t2=esc(q2.question);if(t2.length>90)t2=t2.substring(0,90)+"\u2026";h+='<div class="result-item '+cl2+'"><div class="q-text"><span class="q-num">#'+q2.id+'</span> '+t2+'</div><div class="q-verdict">'+v2+'</div></div>';}}else{h+='<div class="leaderboard"><div class="leaderboard-title"><span>\uD83C\uDFC5</span> Bestenliste</div>';if(state.lbLoading){h+='<div class="lb-loading"><span class="spinner"></span>Bestenliste wird geladen\u2026</div>';}else if(state.lbError){h+='<div class="lb-error">Bestenliste konnte nicht geladen werden.<br><a href="#" onclick="doRetryLb();return false;" style="color:#818cf8">Nochmal versuchen</a></div>';}else if(state.leaderboard&&state.leaderboard.length>0){h+='<table class="lb-table"><thead><tr><th>#</th><th>Name</th><th>Ergebnis</th><th>Note</th><th>Datum</th></tr></thead><tbody>';var medals={1:"\uD83E\uDD47",2:"\uD83E\uDD48",3:"\uD83E\uDD49"};for(var j=0;j<state.leaderboard.length;j++){var e=state.leaderboard[j];var r=j+1;var ml=medals[r]||"";var rc=r===1?"gold":r===2?"silver":r===3?"bronze":"";var pc=e.prozent>=67?"good":e.prozent>=50?"ok":"bad";var rd=String(e.datum||"");var nd=rd;try{var dd=new Date(rd);if(!isNaN(dd))nd=dd.toLocaleDateString("de-DE");}catch(x){}h+='<tr><td><span class="lb-rank '+rc+'">'+(ml?'<span class="lb-medal">'+ml+'</span>':'')+r+'</span></td><td class="lb-name">'+esc(e.name||"")+'</td><td class="lb-pct '+pc+'">'+e.prozent+'%</td><td class="lb-note">'+esc(e.note||"")+'</td><td class="lb-datum">'+esc(nd)+'</td></tr>';}h+='</tbody></table>';}else{h+='<div class="lb-error">Noch keine Eintr\u00E4ge.</div>';}h+='</div>';}h+='<button class="btn-restart" onclick="doRestart()">Nochmal versuchen</button></div>';return h;}
 render();
 </script>
 </body>
