@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WiSo Prüfung – Anlagenmechaniker SHK 2026</title>
+<title>WiSo Prüfung – Anlagenmechaniker SHK 2023 (angepasst auf 2026)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -324,7 +324,6 @@ function doNext() {
   if (state.idx + 1 >= state.questions.length) {
     state.screen = "result";
     saveResult();
-    loadLeaderboard();
   } else {
     state.idx++;
     state.answered = false;
@@ -363,6 +362,7 @@ function saveResult() {
   };
   state.saveStatus = "saving";
   state.saveDebug = "";
+  state.lbLoading = true;
   render();
 
   fetch(SHEET_URL, {
@@ -374,10 +374,12 @@ function saveResult() {
     state.saveStatus = "success";
     state.saveDebug = "";
     render();
+    setTimeout(function() { loadLeaderboard(); }, 2000);
   }).catch(function(err) {
     state.saveStatus = "error";
     state.saveDebug = "POST Fehler: " + err.message;
     render();
+    setTimeout(function() { loadLeaderboard(); }, 2000);
   });
 }
 
@@ -416,7 +418,7 @@ function renderStart() {
   var dis = nameOk() ? "" : "disabled";
   return '<div class="start-screen">' +
     '<h1>Wirtschafts- und Sozialkunde</h1>' +
-    '<p class="desc">Gesellenprüfung – Übungsversion 2026</p>' +
+    '<p class="desc">Gesellenprüfung – Übungsversion 2023 (angepasst auf 2026)</p>' +
     '<p class="meta">' + TOTAL + ' Fragen · Multiple Choice & Zuordnung · mit Erklärungen</p>' +
     '<div class="name-input-wrap">' +
     '<label for="nameField">Dein Name</label>' +
