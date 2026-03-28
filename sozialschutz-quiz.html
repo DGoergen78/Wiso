@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sozialschutz Weltweit – Das Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --accent: #f0c040;
+    --accent2: #e05a5a;
+    --green: #4ecb8c;
+    --red: #e05a5a;
+    --text: #eef0f8;
+    --muted: #7a7f99;
+    --border: #2e3250;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(ellipse at center, rgba(240,192,64,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .label-tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #111;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  h1 span {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 28px;
+    animation: fadeDown 0.7s 0.1s ease both;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .score-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    width: 100%;
+    max-width: 680px;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .q-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .question-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+    line-height: 1.45;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  /* ANSWERS */
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 480px) {
+    .answers { grid-template-columns: 1fr; }
+    .card { padding: 24px; }
+  }
+
+  .answer-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .answer-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(240,192,64,0.07);
+    transform: translateY(-1px);
+  }
+
+  .answer-btn:disabled { cursor: default; }
+
+  .answer-btn .flag {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .answer-btn.correct {
+    border-color: var(--green);
+    background: rgba(78,203,140,0.12);
+    color: var(--green);
+  }
+
+  .answer-btn.wrong {
+    border-color: var(--red);
+    background: rgba(224,90,90,0.1);
+    color: var(--red);
+    opacity: 0.7;
+  }
+
+  .answer-btn .check-icon {
+    margin-left: auto;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* COMPARISON BOX */
+  .comparison-box {
+    margin-top: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    display: none;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .comparison-box.visible { display: block; }
+
+  .comparison-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .comparison-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #c8cbdf;
+  }
+
+  .comparison-text strong { color: var(--text); }
+
+  /* NEXT BTN */
+  .next-btn {
+    display: none;
+    margin-top: 20px;
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: #111;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .next-btn:hover {
+    background: #f7d060;
+    transform: translateY(-1px);
+  }
+
+  .next-btn.visible { display: block; animation: fadeUp 0.3s ease both; }
+
+  /* RESULT SCREEN */
+  .result-screen {
+    display: none;
+    text-align: center;
+    padding: 48px 36px;
+    width: 100%;
+    max-width: 680px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .result-screen.visible { display: block; }
+
+  .result-emoji { font-size: 64px; margin-bottom: 20px; }
+
+  .result-score-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .result-label {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .result-msg {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #c8cbdf;
+    margin-bottom: 36px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .restart-btn {
+    padding: 16px 40px;
+    background: var(--accent);
+    color: #111;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .restart-btn:hover { background: #f7d060; transform: translateY(-1px); }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  .pop { animation: pop 0.25s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="label-tag">Politische Bildung</div>
+  <h1>Sozialschutz <span>weltweit</span></h1>
+  <p class="subtitle">Rate, welches Land sich hinter der Beschreibung verbirgt.</p>
+</header>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-meta">
+    <span class="progress-label" id="progressLabel">Frage 1 von 20</span>
+    <span class="score-badge" id="scoreBadge">0 Punkte</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="card" id="quizCard">
+  <div class="q-number" id="qNumber">Frage 01</div>
+  <div class="question-text" id="questionText"></div>
+  <div class="answers" id="answersGrid"></div>
+  <div class="comparison-box" id="comparisonBox">
+    <div class="comparison-title">🇩🇪 Vergleich mit Deutschland</div>
+    <div class="comparison-text" id="comparisonText"></div>
+  </div>
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Nächste Frage →</button>
+</div>
+
+<div class="result-screen" id="resultScreen">
+  <div class="result-emoji" id="resultEmoji"></div>
+  <div class="result-score-big" id="resultScore"></div>
+  <div class="result-label" id="resultLabel"></div>
+  <div class="result-msg" id="resultMsg"></div>
+  <button class="restart-btn" onclick="restartQuiz()">Quiz neu starten</button>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "In welchem Land haben Arbeitnehmer gesetzlichen Anspruch auf <strong>0 Tage bezahlten Urlaub</strong> \u2013 kein einziger Tag ist gesetzlich vorgeschrieben?",
+    answers: [
+      { text: "Mexiko", flag: "\ud83c\uddf2\ud83c\uddfd" },
+      { text: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", correct: true },
+      { text: "Australien", flag: "\ud83c\udde6\ud83c\uddfa" },
+      { text: "S\u00fcdkorea", flag: "\ud83c\uddf0\ud83c\uddf7" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Mindestens <strong>24 Werktage</strong> (\u2248 20 Arbeitstage) bezahlter Urlaub \u2013 tariflich oft 25\u201330 Tage. Gesetzlich verankert seit 1963.<br><br>\ud83c\uddec\ud83c\udde7 <strong>Gro\u00dfbritannien:</strong> 28 Tage gesetzlicher Mindesturlaub (inkl. Feiertage).<br>\ud83c\udde6\ud83c\uddfa <strong>Australien:</strong> 4 Wochen (20 Tage) gesetzlich garantiert.<br>\ud83c\uddef\ud83c\uddf5 <strong>Japan:</strong> 10\u201320 Tage, aber Japaner nehmen im Schnitt nur die H\u00e4lfte \u2013 aus kulturellem Pflichtgef\u00fchl.<br>\ud83c\udde7\ud83c\uddf7 <strong>Brasilien:</strong> 30 Tage \u2013 einer der gro\u00dfz\u00fcgigsten S\u00e4tze weltweit."
+  },
+  {
+    q: "Welches Land bietet <strong>bis zu 480 Tage Elternzeit</strong>, die sich beide Elternteile flexibel aufteilen k\u00f6nnen \u2013 mit bis zu 80\u00a0% Lohnersatz?",
+    answers: [
+      { text: "Norwegen", flag: "\ud83c\uddf3\ud83c\uddf4" },
+      { text: "D\u00e4nemark", flag: "\ud83c\udde9\ud83c\uddf0" },
+      { text: "Deutschland", flag: "\ud83c\udde9\ud83c\uddea" },
+      { text: "Schweden", flag: "\ud83c\uddf8\ud83c\uddea", correct: true }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> <strong>14 Monate</strong> Elterngeld (65\u201367\u00a0% Lohnersatz), Elternzeit selbst bis 3 Jahre m\u00f6glich.<br><br>\ud83c\uddf3\ud83c\uddf4 <strong>Norwegen:</strong> 49 Wochen bei 100\u00a0% oder 59 Wochen bei 80\u00a0% Lohnersatz \u2013 davon 15 Wochen fest f\u00fcr V\u00e4ter.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Gesetzlich nur 98 Tage Mutterschaftsurlaub, Elternzeit f\u00fcr V\u00e4ter kaum geregelt.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Kein gesetzlicher bezahlter Elternurlaub auf Bundesebene."
+  },
+  {
+    q: "In welchem Land gibt es <strong>keine gesetzliche Krankenversicherungspflicht</strong> und \u00fcber 25 Millionen Menschen sind vollst\u00e4ndig ohne Krankenversicherung?",
+    answers: [
+      { text: "Brasilien", flag: "\ud83c\udde7\ud83c\uddf7" },
+      { text: "Indien", flag: "\ud83c\uddee\ud83c\uddf3" },
+      { text: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", correct: true },
+      { text: "Thailand", flag: "\ud83c\uddf9\ud83c\udded" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Versicherungspflicht f\u00fcr alle seit 2009. Beitrag: ca. 14,6\u00a0% des Bruttolohns (h\u00e4lftig geteilt).<br><br>\ud83c\uddf9\ud83c\udded <strong>Thailand:</strong> Universelles Gesundheitssystem seit 2002 \u2013 alle B\u00fcrger sind erfasst, oft \u00fcberraschend f\u00fcr ein Schwellenland.<br>\ud83c\udde7\ud83c\uddf7 <strong>Brasilien:</strong> Das staatliche SUS-System garantiert allen B\u00fcrgern kostenlosen Zugang zur Gesundheitsversorgung.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Seit 2011 Ziel einer Universalversorgung \u2013 aber Qualit\u00e4t und Zugang auf dem Land weiterhin l\u00fcckenhaft."
+  },
+  {
+    q: "Welches Land hat <strong>als erstes der Welt</strong> eine staatliche Rentenversicherung eingef\u00fchrt \u2013 schon im Jahr 1889?",
+    answers: [
+      { text: "Gro\u00dfbritannien", flag: "\ud83c\uddec\ud83c\udde7" },
+      { text: "Schweden", flag: "\ud83c\uddf8\ud83c\uddea" },
+      { text: "Deutschland", flag: "\ud83c\udde9\ud83c\uddea", correct: true },
+      { text: "Frankreich", flag: "\ud83c\uddeb\ud83c\uddf7" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Bismarck f\u00fchrte 1889 die Rentenversicherung ein \u2013 Teil eines Sozialpakets mit Kranken- (1883) und Unfallversicherung (1884). Heute: 18,6\u00a0% Rentenbeitrag.<br><br>\ud83c\uddec\ud83c\udde7 <strong>Gro\u00dfbritannien:</strong> Staatliche Rente erst ab 1908, als Flat-Rate-Pension.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Social Security erst 1935 unter Roosevelt eingef\u00fchrt \u2013 46 Jahre sp\u00e4ter als Deutschland.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Einheitliches Rentensystem erst nach 1978 aufgebaut, bis heute zweigleisig f\u00fcr Stadt und Land."
+  },
+  {
+    q: "In welchem Land erhalten M\u00fctter einen gesetzlichen Mutterschaftsurlaub von <strong>58 Wochen (ca. 14 Monate)</strong> \u2013 mit vollem Lohnersatz?",
+    answers: [
+      { text: "Schweden", flag: "\ud83c\uddf8\ud83c\uddea" },
+      { text: "Bulgarien", flag: "\ud83c\udde7\ud83c\uddec", correct: true },
+      { text: "Russland", flag: "\ud83c\uddf7\ud83c\uddfa" },
+      { text: "Frankreich", flag: "\ud83c\uddeb\ud83c\uddf7" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> <strong>14 Wochen</strong> Mutterschutz mit vollem Lohnersatz, danach Elterngeld.<br><br>\ud83c\uddf7\ud83c\uddfa <strong>Russland:</strong> 140 Tage (ca. 20 Wochen) Mutterschaftsurlaub mit vollem Lohnersatz.<br>\ud83c\uddeb\ud83c\uddf7 <strong>Frankreich:</strong> 16 Wochen bei vollem Lohnersatz \u2013 bei dritten Kind sogar 26 Wochen.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Kein gesetzlicher bezahlter Mutterschaftsurlaub \u2013 nur 12 Wochen unbezahlt (FMLA).<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Mindestens 98 Tage (14 Wochen), in manchen Provinzen bis zu 6 Monate."
+  },
+  {
+    q: "In welchem Land gibt es <strong>keine gesetzliche Lohnfortzahlung im Krankheitsfall</strong>? Arbeitnehmer erhalten bei Krankheit kein Geld, wenn der Arbeitgeber es nicht freiwillig zahlt.",
+    answers: [
+      { text: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", correct: true },
+      { text: "Japan", flag: "\ud83c\uddef\ud83c\uddf5" },
+      { text: "Australien", flag: "\ud83c\udde6\ud83c\uddfa" },
+      { text: "Kanada", flag: "\ud83c\udde8\ud83c\udde6" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> <strong>6 Wochen</strong> volle Lohnfortzahlung durch den Arbeitgeber, danach bis zu 78 Wochen Krankengeld (70\u00a0% Brutto) durch die Krankenkasse.<br><br>\ud83c\uddec\ud83c\udde7 <strong>Gro\u00dfbritannien:</strong> Statutory Sick Pay: nur ca. 116 \u00a3/Woche \u2013 weit unter dem tats\u00e4chlichen Lohn.<br>\ud83c\udde6\ud83c\uddfa <strong>Australien:</strong> 10 Tage bezahlter Krankenurlaub pro Jahr gesetzlich vorgeschrieben.<br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> Ab Tag 2 \u00fcbernimmt der Staat 80\u00a0% des Lohns \u2013 Tag 1 ist ein Karenztag ohne Zahlung."
+  },
+  {
+    q: "Welches Land hat das <strong>gro\u00dfz\u00fcgigste Arbeitslosengeld</strong> der Welt \u2013 bis zu <strong>90\u00a0% des letzten Nettolohns</strong>, ausgezahlt \u00fcber bis zu 2 Jahre?",
+    answers: [
+      { text: "Deutschland", flag: "\ud83c\udde9\ud83c\uddea" },
+      { text: "D\u00e4nemark", flag: "\ud83c\udde9\ud83c\uddf0", correct: true },
+      { text: "\u00d6sterreich", flag: "\ud83c\udde6\ud83c\uddf9" },
+      { text: "Niederlande", flag: "\ud83c\uddf3\ud83c\uddf1" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Arbeitslosengeld I: <strong>60\u00a0%</strong> des letzten Nettolohns (67\u00a0% mit Kindern), max. 12\u201324 Monate.<br><br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> Bis zu 80\u00a0% f\u00fcr max. 300 Tage \u2013 aber nur bei Gewerkschaftsmitgliedschaft in einer A-Kasse.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Im Schnitt 40\u201345\u00a0% des letzten Lohns, maximal 26 Wochen \u2013 je nach Bundesstaat sehr unterschiedlich.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Arbeitslosengeld existiert, liegt aber oft nur bei 50\u201360\u00a0% des lokalen Mindestlohns \u2013 kaum zum Leben."
+  },
+  {
+    q: "In welchem Land m\u00fcssen viele Menschen <strong>trotz Vollzeitarbeit</strong> staatliche Sozialhilfe beantragen, weil die Mindestl\u00f6hne so niedrig sind, dass sie nicht zum Leben reichen?",
+    answers: [
+      { text: "Rum\u00e4nien", flag: "\ud83c\uddf7\ud83c\uddf4" },
+      { text: "Polen", flag: "\ud83c\uddf5\ud83c\uddf1" },
+      { text: "Mexiko", flag: "\ud83c\uddf2\ud83c\uddfd" },
+      { text: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", correct: true }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Mindestlohn 2025: <strong>12,82 \u20ac/Stunde</strong>. Aufstocker k\u00f6nnen zus\u00e4tzlich B\u00fcrgergeld erhalten.<br><br>\ud83c\uddf2\ud83c\uddfd <strong>Mexiko:</strong> Mindestlohn ca. 3\u20134 \u20ac/Tag \u2013 Millionen Vollzeitbesch\u00e4ftigte leben trotzdem in Armut.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Mindestl\u00f6hne variieren stark nach Provinz (ca. 2\u20133 \u20ac/Stunde), in l\u00e4ndlichen Regionen oft noch niedriger.<br>\ud83c\uddf3\ud83c\uddf1 <strong>Niederlande:</strong> Mindestlohn \u00fcber 13 \u20ac/Stunde \u2013 kaum jemand ist trotz Arbeit auf Sozialhilfe angewiesen."
+  },
+  {
+    q: "Welches Land bietet <strong>kostenloses Mittagessen</strong> f\u00fcr <strong>alle Grundsch\u00fcler</strong> als staatliche Sozialleistung \u2013 unabh\u00e4ngig vom Einkommen der Eltern?",
+    answers: [
+      { text: "Schweden", flag: "\ud83c\uddf8\ud83c\uddea" },
+      { text: "Frankreich", flag: "\ud83c\uddeb\ud83c\uddf7" },
+      { text: "Finnland", flag: "\ud83c\uddeb\ud83c\uddee", correct: true },
+      { text: "Estland", flag: "\ud83c\uddea\ud83c\uddea" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Keine bundesweite Regelung \u2013 Zusch\u00fcsse nur f\u00fcr einkommensschwache Familien \u00fcber das Bildungspaket.<br><br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> Ebenfalls kostenloses Mittagessen f\u00fcr alle Sch\u00fcler seit Jahrzehnten.<br>\ud83c\uddeb\ud83c\uddf7 <strong>Frankreich:</strong> Subventioniertes Mittagessen nach Einkommen gestaffelt \u2013 nicht kostenlos f\u00fcr alle.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Gratis-Schulessen nur f\u00fcr Kinder unter der Armutsgrenze (Free &amp; Reduced Lunch Program)."
+  },
+  {
+    q: "In welchem Land k\u00f6nnen Arbeitnehmer nur <strong>10 Tage Krankengeld pro Jahr</strong> beantragen \u2013 danach gibt es staatlich keinen Cent mehr?",
+    answers: [
+      { text: "Japan", flag: "\ud83c\uddef\ud83c\uddf5", correct: true },
+      { text: "China", flag: "\ud83c\udde8\ud83c\uddf3" },
+      { text: "Singapur", flag: "\ud83c\uddf8\ud83c\uddec" },
+      { text: "S\u00fcdkorea", flag: "\ud83c\uddf0\ud83c\uddf7" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Krankengeld bis zu <strong>78 Wochen</strong> \u2013 70\u00a0% des Bruttolohns, nach 6 Wochen Lohnfortzahlung durch Arbeitgeber.<br><br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Krankengeld je nach Betriebszugeh\u00f6rigkeit: 3 Monate bis 2 Jahre, aber oft nur 60\u201380\u00a0% des Mindestlohns.<br>\ud83c\uddf8\ud83c\uddec <strong>Singapur:</strong> 14 Tage bezahlter Krankenurlaub gesetzlich, danach keine staatliche Leistung.<br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> Unbegrenzte Dauer, 80\u00a0% Lohnersatz ab Tag 2 \u2013 eines der gro\u00dfz\u00fcgigsten Systeme weltweit."
+  },
+  {
+    q: "Welches Land zahlt eine <strong>staatliche Grundrente an alle Rentner</strong> \u2013 unabh\u00e4ngig davon, wie lange sie gearbeitet haben oder ob sie jemals eingezahlt haben?",
+    answers: [
+      { text: "Schweiz", flag: "\ud83c\udde8\ud83c\udded" },
+      { text: "\u00d6sterreich", flag: "\ud83c\udde6\ud83c\uddf9" },
+      { text: "Kanada", flag: "\ud83c\udde8\ud83c\udde6" },
+      { text: "Neuseeland", flag: "\ud83c\uddf3\ud83c\uddff", correct: true }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Rente an Beitragszeiten gekn\u00fcpft. Seit 2021 gibt es die Grundrente als Zuschlag f\u00fcr min. 33 Beitragsjahre.<br><br>\ud83c\udde8\ud83c\udde6 <strong>Kanada:</strong> OAS (Old Age Security) zahlt eine Grundrente ab 65 an alle, die mind. 10 Jahre in Kanada gelebt haben.<br>\ud83c\udde8\ud83c\udded <strong>Schweiz:</strong> AHV-Rente auf Beitragsbasis, aber mit Mindestbetrag f\u00fcr alle Versicherten.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Grundrente f\u00fcr l\u00e4ndliche Bev\u00f6lkerung seit 2009 \u2013 aber oft nur umgerechnet 10\u201320 \u20ac/Monat."
+  },
+  {
+    q: "In welchem Land haben gro\u00dfe Teile der <strong>l\u00e4ndlichen Bev\u00f6lkerung keine staatliche Rentenversicherung</strong> und sind im Alter vollst\u00e4ndig auf die Familie angewiesen?",
+    answers: [
+      { text: "Pakistan", flag: "\ud83c\uddf5\ud83c\uddf0" },
+      { text: "Nigeria", flag: "\ud83c\uddf3\ud83c\uddec" },
+      { text: "Indien", flag: "\ud83c\uddee\ud83c\uddf3", correct: true },
+      { text: "Indonesien", flag: "\ud83c\uddee\ud83c\udde9" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Pflichtversicherung f\u00fcr fast alle \u2013 ca. 36 Millionen Einzahlende. Rentenniveau aktuell ca. 48\u00a0% des Durchschnittslohns.<br><br>\ud83c\uddf3\ud83c\uddec <strong>Nigeria:</strong> Formales Rentensystem (Contributory Pension Scheme) seit 2004, erfasst aber nur Besch\u00e4ftigte im formalen Sektor.<br>\ud83c\uddee\ud83c\udde9 <strong>Indonesien:</strong> BPJS-Ketenagakerjaan seit 2015 f\u00fcr alle Arbeitnehmer verpflichtend \u2013 Umsetzung auf dem Land noch l\u00fcckenhaft.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Zweigeteiltes System: Stadtbewohner besser abgesichert als Landbev\u00f6lkerung."
+  },
+  {
+    q: "Welches Land hat experimentell die <strong>4-Tage-Woche (32h)</strong> als Standard getestet und dabei festgestellt, dass Produktivit\u00e4t und Wohlbefinden gestiegen sind?",
+    answers: [
+      { text: "Island", flag: "\ud83c\uddee\ud83c\uddf8", correct: true },
+      { text: "Belgien", flag: "\ud83c\udde7\ud83c\uddea" },
+      { text: "Frankreich", flag: "\ud83c\uddeb\ud83c\uddf7" },
+      { text: "Niederlande", flag: "\ud83c\uddf3\ud83c\uddf1" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Gesetzliche H\u00f6chstarbeitszeit 48h/Woche, tariflich meist 35\u201340h. Pilotprojekte zur 32h-Woche laufen (z.\u00a0B. IG Metall).<br><br>\ud83c\udde7\ud83c\uddea <strong>Belgien:</strong> Arbeitnehmer k\u00f6nnen seit 2022 dieselbe Stundenzahl auf 4 Tage verteilen \u2013 keine Reduktion der Stunden.<br>\ud83c\uddef\ud83c\uddf5 <strong>Japan:</strong> Einige Konzerne (z.\u00a0B. Panasonic, Hitachi) testen die 4-Tage-Woche gegen die Kultur der \u00dcberstunden.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Offiziell 40h-Woche, de facto arbeiten viele im 996-System: 9\u201321 Uhr, 6 Tage \u2013 70\u00a0h/Woche."
+  },
+  {
+    q: "In welchem Land haben V\u00e4ter gesetzlich nur Anspruch auf <strong>3 Tage Vaterschaftsurlaub</strong> nach der Geburt eines Kindes?",
+    answers: [
+      { text: "Indien", flag: "\ud83c\uddee\ud83c\uddf3" },
+      { text: "Malaysia", flag: "\ud83c\uddf2\ud83c\uddfe" },
+      { text: "\u00c4gypten", flag: "\ud83c\uddea\ud83c\uddec" },
+      { text: "China", flag: "\ud83c\udde8\ud83c\uddf3", correct: true }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Kein separater Vaterschaftsurlaub \u2013 aber bis zu 14 Monate Elterngeld und 3 Jahre Elternzeit m\u00f6glich. V\u00e4ter nehmen im Schnitt 2 Monate.<br><br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> 90 Tage reservierter Vaterschaftsurlaub \u2013 verfallen bei Nichtnutzung (sog. Papamonate).<br>\ud83c\uddef\ud83c\uddf5 <strong>Japan:</strong> Gesetzlich bis zu 1 Jahr Elternzeit f\u00fcr V\u00e4ter m\u00f6glich, aber nur ca. 17\u00a0% nutzen sie tats\u00e4chlich.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Kein gesetzlicher Vaterschaftsurlaub auf Bundesebene \u2013 einige Bundesstaaten (z.\u00a0B. Kalifornien) zahlen freiwillig."
+  },
+  {
+    q: "Welches Land gibt gemessen am BIP am <strong>meisten Geld f\u00fcr Sozialleistungen</strong> aus \u2013 mehr als jedes andere Land der Welt?",
+    answers: [
+      { text: "Deutschland", flag: "\ud83c\udde9\ud83c\uddea" },
+      { text: "Schweden", flag: "\ud83c\uddf8\ud83c\uddea" },
+      { text: "Frankreich", flag: "\ud83c\uddeb\ud83c\uddf7", correct: true },
+      { text: "D\u00e4nemark", flag: "\ud83c\udde9\ud83c\uddf0" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Ca. 26\u201327\u00a0% des BIP \u2013 Platz 3\u20134 weltweit, deutlich \u00fcber dem OECD-Schnitt von ca. 21\u00a0%.<br><br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> Ca. 25\u00a0% des BIP \u2013 hohe Ausgaben, aber starke Gegenleistung durch Steuern.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Ca. 18\u201319\u00a0% des BIP \u2013 deutlich unter dem OECD-Schnitt trotz weltgr\u00f6\u00dfter Volkswirtschaft.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Ca. 10\u201312\u00a0% des BIP \u2013 stark wachsend, aber immer noch weit hinter westlichen Industriel\u00e4ndern."
+  },
+  {
+    q: "In welchem Land k\u00f6nnen Menschen wegen <strong>unbezahlter Krankenhausrechnungen</strong> in den pers\u00f6nlichen Bankrott getrieben werden \u2013 selbst bei Vollzeitjobs?",
+    answers: [
+      { text: "Brasilien", flag: "\ud83c\udde7\ud83c\uddf7" },
+      { text: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", correct: true },
+      { text: "S\u00fcdafrika", flag: "\ud83c\uddff\ud83c\udde6" },
+      { text: "Australien", flag: "\ud83c\udde6\ud83c\uddfa" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Krankenhausleistungen kostenlos f\u00fcr gesetzlich Versicherte (max. 10\u00a0\u20ac/Tag Zuzahlung). Ruini\u00f6se Rechnungen nicht m\u00f6glich.<br><br>\ud83c\udde6\ud83c\uddfa <strong>Australien:</strong> Medicare deckt \u00f6ffentliche Krankenhausbehandlungen vollst\u00e4ndig ab \u2013 keine Insolvenz wegen Krankheit.<br>\ud83c\udde7\ud83c\uddf7 <strong>Brasilien:</strong> Das SUS-System garantiert Gratis-Krankenhausversorgung f\u00fcr alle B\u00fcrger.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Trotz Pflichtversicherung tragen Patienten oft 30\u201350\u00a0% der Kosten selbst \u2013 ein schwerer Schicksalsschlag kann Familien ruinieren."
+  },
+  {
+    q: "Welches Land f\u00fchrte <strong>2017 als erstes der Welt</strong> ein landesweites Pilotprojekt zum <strong>bedingungslosen Grundeinkommen</strong> durch \u2013 mit 2.000 zuf\u00e4llig ausgew\u00e4hlten Arbeitslosen?",
+    answers: [
+      { text: "Niederlande", flag: "\ud83c\uddf3\ud83c\uddf1" },
+      { text: "Schweiz", flag: "\ud83c\udde8\ud83c\udded" },
+      { text: "Finnland", flag: "\ud83c\uddeb\ud83c\uddee", correct: true },
+      { text: "Kanada", flag: "\ud83c\udde8\ud83c\udde6" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Privates Pilotprojekt (BGE-Studie) seit 2021 mit 1.200\u00a0\u20ac/Monat f\u00fcr 3 Jahre. Staatliches BGE gibt es nicht \u2013 stattdessen B\u00fcrgergeld als bedarfsgepr\u00fcfte Grundsicherung.<br><br>\ud83c\udde8\ud83c\udded <strong>Schweiz:</strong> Volksabstimmung 2016 \u00fcber BGE von 2.500 CHF/Monat \u2013 mit 77\u00a0% abgelehnt.<br>\ud83c\uddf0\ud83c\uddea <strong>Kenia:</strong> GiveDirectly f\u00fchrt seit 2016 das l\u00e4ngste BGE-Experiment weltweit durch \u2013 12 Jahre, 20\u00a0000 Menschen.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Kein BGE \u2013 stattdessen zielgruppenspezifische Sozialleistungen wie das Di-Bao-Programm f\u00fcr Bed\u00fcrftige."
+  },
+  {
+    q: "In welchem Land haben <strong>Haushaltsangestellte</strong> (Reinigungskr\u00e4fte, Haushaltshilfen) bis heute kaum Zugang zu Kranken-, Renten- oder Unfallversicherung?",
+    answers: [
+      { text: "Peru", flag: "\ud83c\uddf5\ud83c\uddea" },
+      { text: "Indien", flag: "\ud83c\uddee\ud83c\uddf3", correct: true },
+      { text: "Chile", flag: "\ud83c\udde8\ud83c\uddf1" },
+      { text: "Argentinien", flag: "\ud83c\udde6\ud83c\uddf7" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Auch Minijobber und Haushaltshilfen sind \u00fcber die Minijob-Zentrale sozialversicherungspflichtig. Arbeitgeber zahlen Pauschalabgaben.<br><br>\ud83c\udde8\ud83c\uddf1 <strong>Chile:</strong> Seit 2015 volle Sozialversicherungspflicht f\u00fcr Haushaltsangestellte \u2013 ein Vorbild f\u00fcr Lateinamerika.<br>\ud83c\udde7\ud83c\uddf7 <strong>Brasilien:</strong> Seit 2015 Gleichstellung von Haushaltsangestellten mit anderen Arbeitnehmern \u2013 auch hier lange ein Kampf.<br>\ud83c\uddf3\ud83c\uddec <strong>Nigeria:</strong> Informeller Sektor dominiert \u2013 \u00fcber 80\u00a0% der Besch\u00e4ftigten ohne jeglichen Sozialschutz."
+  },
+  {
+    q: "In welchem Land gibt es ein staatliches Sozialpunktesystem (<strong>Social Credit System</strong>), das auch \u00fcber den Zugang zu Sozialleistungen und Jobs entscheiden kann?",
+    answers: [
+      { text: "Russland", flag: "\ud83c\uddf7\ud83c\uddfa" },
+      { text: "Singapur", flag: "\ud83c\uddf8\ud83c\uddec" },
+      { text: "China", flag: "\ud83c\udde8\ud83c\uddf3", correct: true },
+      { text: "S\u00fcdkorea", flag: "\ud83c\uddf0\ud83c\uddf7" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Sozialleistungen sind ein <strong>Rechtsanspruch</strong> \u2013 unabh\u00e4ngig von Verhalten oder Bewertung. Der Staat darf Leistungen nicht willk\u00fcrlich entziehen. Das Grundgesetz sch\u00fctzt die Menschenw\u00fcrde.<br><br>\ud83c\uddf8\ud83c\uddec <strong>Singapur:</strong> Kein vergleichbares System, aber starker Staat mit strikten Verhaltensregeln (z.\u00a0B. Kaugummiverbot).<br>\ud83c\uddf7\ud83c\uddfa <strong>Russland:</strong> Kein Social Credit System, aber Zugang zu Leistungen kann politisch instrumentalisiert werden.<br>\ud83c\uddfa\ud83c\uddf8 <strong>USA:</strong> Kein Staatsystem \u2013 aber private Schufa-\u00e4hnliche Credit Scores beeinflussen stark Zugang zu Wohnungen und Jobs."
+  },
+  {
+    q: "In welchem Land m\u00fcssen \u00e4ltere Menschen h\u00e4ufig <strong>bis ins hohe Alter arbeiten</strong>, weil die staatliche Rente so gering ist, dass sie nicht zum \u00dcberleben reicht \u2013 und viele Rentner auf Stra\u00dfen Kartons sammeln?",
+    answers: [
+      { text: "Vietnam", flag: "\ud83c\uddfb\ud83c\uddf3" },
+      { text: "Thailand", flag: "\ud83c\uddf9\ud83c\udded" },
+      { text: "China", flag: "\ud83c\udde8\ud83c\uddf3", correct: true },
+      { text: "Indonesien", flag: "\ud83c\uddee\ud83c\udde9" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Durchschnittliche gesetzliche Rente ca. 1.200\u20131.500\u00a0\u20ac/Monat. Grundsicherung im Alter f\u00fcr alle, die nicht gen\u00fcgend eingezahlt haben.<br><br>\ud83c\uddef\ud83c\uddf5 <strong>Japan:</strong> Grundrente ca. 700\u00a0\u20ac/Monat \u2013 viele \u00c4ltere arbeiten freiwillig weiter, teils aus finanzieller Not.<br>\ud83c\uddf0\ud83c\uddf7 <strong>S\u00fcdkorea:</strong> Staatliche Rente oft unter 300\u00a0\u20ac/Monat \u2013 Altersarmut ist ein massives Problem, h\u00f6chste Altersarmutsquote in der OECD.<br>\ud83c\uddf8\ud83c\uddea <strong>Schweden:</strong> Garantierente f\u00fcr alle, die keine ausreichende Beitragsrente haben \u2013 niemand geht leer aus."
+  },
+  {
+    q: "Welches Land verschickt an alle werdenden M\u00fctter eine <strong>staatliche Baby-Box</strong> mit Babyausstattung \u2013 Strampler, Windeln, Bettw\u00e4sche \u2013 als universelle Geburtsbeihilfe?",
+    answers: [
+      { text: "Schweden", flag: "\ud83c\uddf8\ud83c\uddea" },
+      { text: "Norwegen", flag: "\ud83c\uddf3\ud83c\uddf4" },
+      { text: "Estland", flag: "\ud83c\uddea\ud83c\uddea" },
+      { text: "Finnland", flag: "\ud83c\uddeb\ud83c\uddee", correct: true }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> Keine Baby-Box \u2013 stattdessen Kindergeld (250\u00a0\u20ac/Monat ab 2025) und Mutterschaftsgeld \u00fcber die Krankenkasse.<br><br>\ud83c\uddea\ud83c\uddea <strong>Estland:</strong> Seit 2018 eigene Baby-Box nach finnischem Vorbild \u2013 zeigt, wie Ideen zwischen Nachbarl\u00e4ndern wandern.<br>\ud83c\uddf8\ud83c\udde6 <strong>Schottland:</strong> F\u00fchrte 2017 ebenfalls eine Baby-Box f\u00fcr alle Neugeborenen ein.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Keine Baby-Box, aber seit 2021 finanzielle Anreize f\u00fcr Dritte Kinder \u2013 als Reaktion auf den Geburtenr\u00fcckgang."
+  },
+  {
+    q: "In welchem Land gibt es <strong>keinen einzigen Tag</strong> gesetzlich garantierten <strong>bezahlten Mutterschaftsurlaub</strong> auf nationaler Ebene?",
+    answers: [
+      { text: "Mexiko", flag: "\ud83c\uddf2\ud83c\uddfd" },
+      { text: "China", flag: "\ud83c\udde8\ud83c\uddf3" },
+      { text: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", correct: true },
+      { text: "Indien", flag: "\ud83c\uddee\ud83c\uddf3" }
+    ],
+    comparison: "\ud83c\udde9\ud83c\uddea <strong>Deutschland:</strong> 14 Wochen bezahlter Mutterschutz mit vollem Lohnersatz \u2013 gesetzlich garantiert seit 1952.<br><br>\ud83c\uddee\ud83c\uddf3 <strong>Indien:</strong> Seit 2017 sogar 26 Wochen bezahlter Mutterschaftsurlaub \u2013 mehr als Deutschland!<br>\ud83c\uddf2\ud83c\uddfd <strong>Mexiko:</strong> 12 Wochen bezahlter Mutterschaftsurlaub gesetzlich vorgeschrieben.<br>\ud83c\udde8\ud83c\uddf3 <strong>China:</strong> Mindestens 98 Tage (14 Wochen) bezahlter Mutterschaftsurlaub \u2013 in manchen Provinzen bis zu 6 Monate."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[current];
+  const shuffled = shuffle([...q.answers]);
+
+  document.getElementById('qNumber').textContent = 'Frage ' + String(current+1).padStart(2,'0');
+  document.getElementById('questionText').innerHTML = q.q;
+  document.getElementById('progressLabel').textContent = 'Frage ' + (current+1) + ' von ' + questions.length;
+  document.getElementById('progressFill').style.width = ((current / questions.length) * 100) + '%';
+  document.getElementById('comparisonBox').classList.remove('visible');
+  document.getElementById('nextBtn').classList.remove('visible');
+
+  const grid = document.getElementById('answersGrid');
+  grid.innerHTML = '';
+
+  shuffled.forEach(function(a) {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = '<span class="flag">' + a.flag + '</span><span>' + a.text + '</span>';
+    btn.addEventListener('click', function() { selectAnswer(btn, a.correct, shuffled); });
+    grid.appendChild(btn);
+  });
+
+  const card = document.getElementById('quizCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'fadeUp 0.4s ease both';
+}
+
+function selectAnswer(btn, isCorrect, allAnswers) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.answer-btn');
+  allBtns.forEach(function(b) { b.disabled = true; });
+
+  if (isCorrect) {
+    score++;
+    btn.classList.add('correct');
+    btn.innerHTML += '<span class="check-icon">\u2713</span>';
+  } else {
+    btn.classList.add('wrong');
+    btn.innerHTML += '<span class="check-icon">\u2717</span>';
+    allBtns.forEach(function(b) {
+      const nameEl = b.querySelector('span:last-of-type');
+      if (!nameEl) return;
+      const name = nameEl.textContent;
+      const match = allAnswers.find(function(a) { return a.correct && a.text === name; });
+      if (match) {
+        b.classList.add('correct');
+        b.innerHTML += '<span class="check-icon">\u2713</span>';
+      }
+    });
+  }
+
+  document.getElementById('scoreBadge').textContent = score + ' Punkte';
+  document.getElementById('scoreBadge').classList.add('pop');
+  setTimeout(function() { document.getElementById('scoreBadge').classList.remove('pop'); }, 300);
+
+  document.getElementById('comparisonText').innerHTML = questions[current].comparison;
+  document.getElementById('comparisonBox').classList.add('visible');
+  document.getElementById('nextBtn').classList.add('visible');
+  document.getElementById('nextBtn').textContent = current < questions.length - 1 ? 'N\u00e4chste Frage \u2192' : 'Ergebnis anzeigen \u2192';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('progressWrap').style.display = 'none';
+  const rs = document.getElementById('resultScreen');
+  rs.classList.add('visible');
+
+  const pct = score / questions.length;
+  let emoji, label, msg;
+
+  if (pct >= 0.85) {
+    emoji = '\ud83c\udfc6'; label = 'Ausgezeichnet!';
+    msg = 'Du hast ' + score + ' von ' + questions.length + ' Fragen richtig! Du kennst dich mit globalen Sozialsystemen wirklich gut aus. Bleib kritisch und neugierig!';
+  } else if (pct >= 0.65) {
+    emoji = '\ud83c\udf0d'; label = 'Gut gemacht!';
+    msg = score + ' von ' + questions.length + ' Punkten \u2013 du hast ein solides Grundwissen \u00fcber Sozialschutz weltweit. Schau dir die Unterschiede nochmal an!';
+  } else if (pct >= 0.45) {
+    emoji = '\ud83d\udcda'; label = 'Noch Luft nach oben!';
+    msg = score + ' von ' + questions.length + ' richtig. Die Unterschiede zwischen Sozialsystemen sind oft \u00fcberraschend \u2013 versuch es nochmal!';
+  } else {
+    emoji = '\ud83e\udd14'; label = '\u00dcberraschend, oder?';
+    msg = score + ' von ' + questions.length + ' \u2013 das Thema globale soziale Absicherung h\u00e4lt viele \u00dcberraschungen bereit. Beim n\u00e4chsten Versuch wei\u00dft du mehr!';
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultScore').textContent = score + '/' + questions.length;
+  document.getElementById('resultLabel').textContent = label;
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+function restartQuiz() {
+  current = 0; score = 0;
+  document.getElementById('quizCard').style.display = '';
+  document.getElementById('progressWrap').style.display = '';
+  document.getElementById('resultScreen').classList.remove('visible');
+  document.getElementById('scoreBadge').textContent = '0 Punkte';
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
