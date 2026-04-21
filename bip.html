@@ -49,22 +49,7 @@
     display: flex; align-items: center; gap: 12px;
   }
   .nav-logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--accent2); font-weight: 800; }
-  .nav-chapters {
-    display: flex; gap: 6px; overflow-x: auto;
-    scrollbar-width: none; flex: 1; justify-content: flex-end;
-  }
-  .nav-chapters::-webkit-scrollbar { display: none; }
-  .nav-dot {
-    width: 28px; height: 28px; border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--card);
-    cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.65rem; font-weight: 800; color: var(--muted);
-    flex-shrink: 0;
-  }
-  .nav-dot.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.15); }
-  .nav-dot.done { background: var(--accent2) !important; border-color: var(--accent2) !important; color: #000 !important; }
+  .nav-chapters { display: none; }
 
   /* ── HERO ── */
   .hero {
@@ -474,7 +459,7 @@
     </div>
     <div class="example-box">
       <div class="ex-label">🧩 Beispiel</div>
-      <p>In Deutschland werden in einem Jahr Autos gefertigt, Brote gebacken, Software entwickelt und Friseurleistungen erbracht. Der <strong>Gesamtwert all dieser Leistungen</strong> ergibt das BIP. 2024 lag es bei über <strong>4.200 Milliarden Euro</strong>.</p>
+      <p>In Deutschland werden in einem Jahr Autos gefertigt, Brote gebacken, Software entwickelt und Friseurleistungen erbracht. Der <strong>Gesamtwert all dieser Leistungen</strong> ergibt das BIP. 2024 lag es bei über <strong>4.306 Milliarden Euro</strong>.</p>
     </div>
   </div>
 
@@ -746,10 +731,13 @@ function buildNav() {
   cont.innerHTML = '';
   for (let i = 1; i <= chaptersTotal; i++) {
     const d = document.createElement('div');
-    let cls = 'nav-dot';
-    if (chaptersDone.has(i)) cls += ' done';
-    else if (i === activeChapter) cls += ' active';
-    d.className = cls;
+    if (chaptersDone.has(i)) {
+      d.className = 'nav-dot done';
+    } else if (i === activeChapter) {
+      d.className = 'nav-dot active';
+    } else {
+      d.className = 'nav-dot';
+    }
     d.textContent = i;
     d.onclick = () => document.getElementById('sec'+i).scrollIntoView({behavior:'smooth'});
     cont.appendChild(d);
@@ -757,7 +745,8 @@ function buildNav() {
 }
 buildNav();
 
-// Track active chapter on scroll
+// Track active chapter on scroll – only mark as active if NOT already done
+let scrollTimer = null;
 window.addEventListener('scroll', () => {
   let current = 0;
   for (let i = 1; i <= chaptersTotal; i++) {
@@ -765,6 +754,9 @@ window.addEventListener('scroll', () => {
     if (sec && sec.getBoundingClientRect().top < window.innerHeight * 0.6) current = i;
   }
   if (current !== activeChapter) { activeChapter = current; buildNav(); }
+  // Clear active highlight 1.5s after scrolling stops
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => { activeChapter = 0; buildNav(); }, 1500);
 }, {passive: true});
 
 // ── SCROLL REVEAL ──
@@ -797,7 +789,18 @@ function checkQ(id, btn, correct) {
   const opts = box.querySelectorAll('.quiz-option');
   const fb = document.getElementById(id + '-feedback');
   const nxt = document.getElementById(id + '-next');
-  opts.forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+
+  // Vor dem Löschen von onclick: richtige Antwort markieren falls nötig
+  if (!correct) {
+    // Richtige Antwort finden – der Button dessen onclick "true" enthält
+    opts.forEach(o => {
+      const handlerStr = o.getAttribute('onclick') || '';
+      if (handlerStr.includes(', true)')) o.classList.add('correct');
+    });
+  }
+
+  opts.forEach(o => { o.classList.add('disabled'); o.removeAttribute('onclick'); });
+
   if (correct) {
     btn.classList.add('correct');
     fb.textContent = '✅ Richtig! Super gemacht.';
@@ -809,15 +812,6 @@ function checkQ(id, btn, correct) {
     btn.classList.add('wrong'); btn.classList.add('shake');
     fb.textContent = '❌ Leider falsch. Die grün markierte Antwort wäre korrekt gewesen.';
     fb.className = 'quiz-feedback show nok';
-    opts.forEach(o => { if (o.onclick === null && !o.classList.contains('wrong') && !o.classList.contains('correct')) {
-      // find correct
-    }});
-    // mark correct
-    opts.forEach(o => {
-      if (o.textContent.trim() !== btn.textContent.trim()) {
-        const isCorrect = o.onclick === null ? false : true;
-      }
-    });
     markChapter(id);
   }
   nxt.classList.add('show');
