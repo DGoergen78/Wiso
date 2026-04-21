@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIP Verstehen – Dein Wirtschafts-Lernkurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card2: #222536;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #ffd93d;
+    --text: #e8eaf0;
+    --muted: #7a7f99;
+    --border: rgba(255,255,255,0.07);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.5s ease; z-index: 999; width: 0%;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--accent2); font-weight: 800; }
+  .nav-chapters {
+    display: flex; gap: 6px; overflow-x: auto;
+    scrollbar-width: none; flex: 1; justify-content: flex-end;
+  }
+  .nav-chapters::-webkit-scrollbar { display: none; }
+  .nav-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--card);
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 800; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .nav-dot.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.15); }
+  .nav-dot.done { background: var(--accent2) !important; border-color: var(--accent2) !important; color: #000 !important; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(108,99,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.4);
+    color: var(--accent);
+    padding: 5px 16px; border-radius: 99px;
+    font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  .hero h1 span { color: var(--accent2); }
+  .hero p { color: var(--muted); max-width: 520px; margin: 0 auto 30px; font-size: 1.05rem; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 30px;
+    flex-wrap: wrap; margin-bottom: 36px;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--accent2); }
+  .stat-lbl { font-size: 0.78rem; color: var(--muted); }
+
+  /* ── SECTION ── */
+  section {
+    max-width: 720px; margin: 0 auto 50px;
+    padding: 0 18px;
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+  }
+  .section-num {
+    width: 46px; height: 46px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; }
+  .section-title span { color: var(--accent2); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .card-accent { border-left: 4px solid var(--accent2); }
+
+  /* ── EXAMPLE BOX ── */
+  .example-box {
+    background: rgba(0, 212, 170, 0.07);
+    border: 1px solid rgba(0, 212, 170, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin-top: 14px;
+  }
+  .example-box .ex-label {
+    font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--accent2); margin-bottom: 6px;
+  }
+  .example-box p { font-size: 0.93rem; color: #c0ccd8; }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 16px;
+  }
+  .compare-col {
+    background: var(--card2);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+  .compare-col h4 {
+    font-size: 0.85rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .compare-col.nominal h4 { color: var(--accent3); }
+  .compare-col.real h4 { color: var(--accent2); }
+  .compare-col li {
+    font-size: 0.88rem; color: var(--muted);
+    list-style: none; padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-col li:last-child { border-bottom: none; }
+  .compare-col li::before { content: '→ '; color: var(--accent); }
+
+  /* ── HIGHLIGHT CHIP ── */
+  .chip {
+    display: inline-block;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.3);
+    color: #a89dff; padding: 2px 10px;
+    border-radius: 99px; font-size: 0.82rem; font-weight: 700;
+  }
+  .chip.green { background: rgba(0,212,170,0.12); border-color: rgba(0,212,170,0.3); color: var(--accent2); }
+  .chip.red { background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.3); color: var(--accent3); }
+
+  /* ── LIMITATIONS LIST ── */
+  .limit-list { list-style: none; margin-top: 14px; }
+  .limit-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.93rem;
+  }
+  .limit-list li:last-child { border-bottom: none; }
+  .limit-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── BIP METHODS ── */
+  .methods-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px; margin-top: 16px;
+  }
+  .method-card {
+    background: var(--card2);
+    border-radius: var(--radius-sm);
+    padding: 18px 16px;
+    text-align: center;
+    border-top: 3px solid transparent;
+    transition: transform 0.2s;
+  }
+  .method-card:hover { transform: translateY(-4px); }
+  .method-card.m1 { border-color: var(--accent); }
+  .method-card.m2 { border-color: var(--accent2); }
+  .method-card.m3 { border-color: var(--accent4); }
+  .method-card .m-icon { font-size: 2rem; margin-bottom: 8px; }
+  .method-card h4 { font-size: 0.9rem; font-weight: 800; margin-bottom: 6px; }
+  .method-card p { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; }
+  .method-card .m-examples { font-size: 0.78rem; color: var(--accent2); }
+
+  /* ── QUIZ ── */
+  .quiz-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-top: 24px;
+  }
+  .quiz-label {
+    font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--accent4); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .quiz-question { font-weight: 700; font-size: 1.02rem; margin-bottom: 18px; line-height: 1.5; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    background: var(--card2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 13px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.93rem;
+    font-weight: 600;
+    text-align: left;
+    color: var(--text);
+  }
+  .quiz-option:hover { border-color: var(--accent); background: rgba(108,99,255,0.08); }
+  .quiz-option.correct { border-color: var(--accent2) !important; background: rgba(0,212,170,0.12) !important; color: var(--accent2); }
+  .quiz-option.wrong { border-color: var(--accent3) !important; background: rgba(255,107,107,0.1) !important; color: var(--accent3); }
+  .quiz-option.disabled { cursor: default; pointer-events: none; }
+  .quiz-option.shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)}
+  }
+  .quiz-feedback {
+    margin-top: 14px; padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem; font-weight: 600;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(0,212,170,0.1); color: var(--accent2); border: 1px solid rgba(0,212,170,0.25); }
+  .quiz-feedback.nok { background: rgba(255,107,107,0.1); color: #ff9f9f; border: 1px solid rgba(255,107,107,0.25); }
+  .quiz-next {
+    margin-top: 14px; padding: 11px 22px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.93rem;
+    cursor: pointer; display: none;
+    transition: opacity 0.2s;
+  }
+  .quiz-next:hover { opacity: 0.85; }
+  .quiz-next.show { display: inline-block; }
+
+  /* ── DRAG & DROP QUIZ ── */
+  .drag-quiz { margin-top: 20px; }
+  .drag-quiz p { font-size: 0.93rem; color: var(--muted); margin-bottom: 14px; }
+  .drag-items {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 18px;
+  }
+  .drag-item {
+    background: rgba(108,99,255,0.15);
+    border: 2px dashed rgba(108,99,255,0.4);
+    color: #a89dff; padding: 7px 14px;
+    border-radius: 99px; font-size: 0.85rem; font-weight: 700;
+    cursor: grab; user-select: none;
+    transition: all 0.2s;
+  }
+  .drag-item:active { cursor: grabbing; transform: scale(1.05); }
+  .drag-item.placed { opacity: 0.3; pointer-events: none; }
+  .drop-zones { display: flex; flex-direction: column; gap: 12px; }
+  .drop-zone {
+    background: var(--card2); border: 2px dashed var(--border);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    min-height: 52px; transition: border-color 0.2s;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .drop-zone.over { border-color: var(--accent2); background: rgba(0,212,170,0.06); }
+  .drop-zone-label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); white-space: nowrap; }
+  .placed-tag {
+    background: rgba(0,212,170,0.15); border: 1px solid rgba(0,212,170,0.3);
+    color: var(--accent2); padding: 4px 12px; border-radius: 99px;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  }
+  .placed-tag.wrong-place {
+    background: rgba(255,107,107,0.15); border-color: rgba(255,107,107,0.3); color: var(--accent3);
+  }
+  .check-btn {
+    margin-top: 16px; padding: 11px 24px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.93rem;
+    color: #fff; cursor: pointer; transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.85; }
+  .drag-result {
+    margin-top: 14px; padding: 12px 16px; border-radius: var(--radius-sm);
+    font-size: 0.9rem; font-weight: 600; display: none;
+  }
+  .drag-result.show { display: block; }
+
+  /* ── FILL-IN QUIZ ── */
+  .fillin-box { margin-top: 18px; }
+  .fillin-sentence {
+    font-size: 1rem; line-height: 2.2; color: var(--text);
+    margin-bottom: 16px;
+  }
+  .fillin-input {
+    background: var(--card2); border: 2px solid var(--border);
+    color: var(--text); border-radius: 8px;
+    padding: 4px 10px; font-family: 'Nunito', sans-serif;
+    font-size: 0.93rem; font-weight: 700;
+    width: 140px; outline: none; transition: border-color 0.2s;
+  }
+  .fillin-input:focus { border-color: var(--accent); }
+  .fillin-input.correct-fill { border-color: var(--accent2); background: rgba(0,212,170,0.1); }
+  .fillin-input.wrong-fill { border-color: var(--accent3); background: rgba(255,107,107,0.08); }
+
+  /* ── SCORE BANNER ── */
+  .score-banner {
+    text-align: center; padding: 40px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 0 18px 60px;
+    max-width: 720px; margin-left: auto; margin-right: auto;
+    opacity: 0; transform: scale(0.95);
+    transition: all 0.5s ease;
+  }
+  .score-banner.show { opacity: 1; transform: scale(1); }
+  .score-big { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; color: var(--accent2); }
+  .score-msg { color: var(--muted); margin-top: 8px; font-size: 1.05rem; }
+  .restart-btn {
+    margin-top: 24px; padding: 13px 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem;
+    color: #fff; cursor: pointer;
+  }
+
+  /* ── INTERACTIVE GDP TABLE ── */
+  .gdp-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 14px; }
+  .gdp-table th {
+    background: var(--card2); padding: 10px 12px;
+    font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--muted);
+    border-bottom: 2px solid var(--border);
+    text-align: left;
+  }
+  .gdp-table td {
+    padding: 11px 12px; font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .gdp-table tr:last-child td { border-bottom: none; }
+  .gdp-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .bar-cell { position: relative; }
+  .bar-bg { background: var(--card2); border-radius: 4px; height: 8px; overflow: hidden; margin-top: 4px; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+  /* ── TOOLTIP ── */
+  .tooltip-wrap { position: relative; display: inline-block; }
+  .tooltip-trigger {
+    color: var(--accent2); cursor: help;
+    border-bottom: 1px dashed var(--accent2);
+  }
+  .tooltip-content {
+    display: none; position: absolute; bottom: 125%; left: 50%;
+    transform: translateX(-50%);
+    background: #2a2d40; border: 1px solid var(--border);
+    padding: 10px 14px; border-radius: 10px;
+    font-size: 0.82rem; color: var(--text);
+    width: 220px; text-align: center; z-index: 50;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .tooltip-wrap:hover .tooltip-content { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 500px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .methods-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.9rem; }
+    nav { padding: 10px 14px; }
+    .nav-logo { font-size: 0.95rem; }
+  }
+
+  /* ── CONFETTI ── */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px;
+    border-radius: 2px; opacity: 0; pointer-events: none;
+    animation: confettiFall 2s ease forwards;
+    z-index: 999;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  p { margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div class="nav-logo">💡 BIP</div>
+  <div class="nav-chapters" id="navDots"></div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Wirtschaft verstehen</div>
+  <h1>Das <span>Bruttoinlands-<br>produkt</span> erklärt</h1>
+  <p>Lerne interaktiv, was das BIP ist, wie es gemessen wird – und wo es an seine Grenzen stößt.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Kapitel</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-lbl">Übungen</div></div>
+    <div class="stat"><div class="stat-num">~15</div><div class="stat-lbl">Minuten</div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     KAPITEL 1 – WAS IST DAS BIP?
+     ════════════════════════════════════ -->
+<section id="sec1" data-chapter="1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">Was ist das <span>BIP</span>?</div>
+  </div>
+
+  <div class="card card-accent">
+    <p>Das <strong>Bruttoinlandsprodukt (BIP)</strong> ist der <strong>Gesamtwert aller Güter und Dienstleistungen</strong>, die innerhalb eines Jahres innerhalb der <strong>Landesgrenzen</strong> einer Volkswirtschaft produziert werden – bewertet zu Marktpreisen.</p>
+    <p style="margin-top:10px;">BIP steht für:</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+      <div style="background:rgba(108,99,255,0.15);border-radius:10px;padding:10px 16px;text-align:center;flex:1;min-width:80px;">
+        <div style="font-family:'Syne',sans-serif;font-size:1.6rem;color:var(--accent);">B</div>
+        <div style="font-size:0.78rem;color:var(--muted);">rutto</div>
+      </div>
+      <div style="background:rgba(0,212,170,0.1);border-radius:10px;padding:10px 16px;text-align:center;flex:1;min-width:80px;">
+        <div style="font-family:'Syne',sans-serif;font-size:1.6rem;color:var(--accent2);">I</div>
+        <div style="font-size:0.78rem;color:var(--muted);">nlands</div>
+      </div>
+      <div style="background:rgba(255,217,61,0.1);border-radius:10px;padding:10px 16px;text-align:center;flex:1;min-width:80px;">
+        <div style="font-family:'Syne',sans-serif;font-size:1.6rem;color:var(--accent4);">P</div>
+        <div style="font-size:0.78rem;color:var(--muted);">rodukt</div>
+      </div>
+    </div>
+    <div class="example-box">
+      <div class="ex-label">🧩 Beispiel</div>
+      <p>In Deutschland werden in einem Jahr Autos gefertigt, Brote gebacken, Software entwickelt und Friseurleistungen erbracht. Der <strong>Gesamtwert all dieser Leistungen</strong> ergibt das BIP. 2024 lag es bei über <strong>4.200 Milliarden Euro</strong>.</p>
+    </div>
+  </div>
+
+  <!-- Quiz 1 -->
+  <div class="quiz-box" id="q1">
+    <div class="quiz-label">✏️ Übung 1</div>
+    <div class="quiz-question">Was wird beim BIP gemessen?</div>
+    <div class="quiz-options">
+      <button class="quiz-option" onclick="checkQ('q1', this, false)">Die Anzahl der Beschäftigten in einer Volkswirtschaft</button>
+      <button class="quiz-option" onclick="checkQ('q1', this, true)">Der Gesamtwert aller produzierten Güter und Dienstleistungen eines Jahres</button>
+      <button class="quiz-option" onclick="checkQ('q1', this, false)">Das Guthaben der Deutschen auf Bankkonten</button>
+      <button class="quiz-option" onclick="checkQ('q1', this, false)">Die Menge der exportierten Waren</button>
+    </div>
+    <div class="quiz-feedback" id="q1-feedback"></div>
+    <button class="quiz-next" id="q1-next" onclick="scrollToNext('sec2')">Weiter →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     KAPITEL 2 – NOMINAL vs. REAL
+     ════════════════════════════════════ -->
+<section id="sec2" data-chapter="2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title"><span>Nominal</span> vs. Real</div>
+  </div>
+
+  <div class="card">
+    <p>Es gibt zwei Arten, das BIP zu berechnen – und der Unterschied ist wichtig!</p>
+    <div class="compare-grid">
+      <div class="compare-col nominal">
+        <h4>📈 Nominales BIP</h4>
+        <ul>
+          <li>Aktuelle Marktpreise</li>
+          <li>Steigt auch bei Inflation</li>
+          <li>Wenig aussagekräftig</li>
+          <li>Täuscht echtes Wachstum vor</li>
+        </ul>
+      </div>
+      <div class="compare-col real">
+        <h4>✅ Reales BIP</h4>
+        <ul>
+          <li>Inflationsbereinigte Preise</li>
+          <li>Zeigt echtes Wachstum</li>
+          <li>Aussagekräftig</li>
+          <li>„Echte" Wirtschaftsleistung</li>
+        </ul>
+      </div>
+    </div>
+    <div class="example-box">
+      <div class="ex-label">🧩 Beispiel</div>
+      <p>Ein Bäcker produziert 2025 <strong>genauso viele Brote</strong> wie 2024, aber Brot kostet jetzt 20 % mehr. Das <span class="chip red">nominale BIP</span> steigt – obwohl nichts mehr produziert wurde. Das <span class="chip green">reale BIP</span> bleibt gleich und zeigt: kein echtes Wachstum.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">📊 Reales BIP pro Kopf – Vergleich 2024:</p>
+    <table class="gdp-table">
+      <thead>
+        <tr>
+          <th>Land</th>
+          <th>BIP pro Kopf (€)</th>
+          <th style="min-width:80px;">Vergleich</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🇨🇭 Schweiz</td>
+          <td><strong style="color:var(--accent2)">88.318</strong></td>
+          <td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:0%;background:var(--accent2)" data-w="100"></div></div></td>
+        </tr>
+        <tr>
+          <td>🇩🇪 Deutschland</td>
+          <td>46.145</td>
+          <td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:0%;background:#6c63ff" data-w="52"></div></div></td>
+        </tr>
+        <tr>
+          <td>🇺🇸 USA</td>
+          <td>72.485</td>
+          <td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:0%;background:#ffd93d" data-w="82"></div></div></td>
+        </tr>
+        <tr>
+          <td>🇨🇳 China</td>
+          <td>11.965</td>
+          <td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:0%;background:#ff6b6b" data-w="14"></div></div></td>
+        </tr>
+        <tr>
+          <td>🇮🇳 Indien</td>
+          <td>2.275</td>
+          <td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:0%;background:#ff9f43" data-w="3"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Quiz 2 – Fill-in -->
+  <div class="quiz-box" id="q2">
+    <div class="quiz-label">✏️ Übung 2 – Lückentext</div>
+    <div class="quiz-question">Ergänze die Lücken mit den richtigen Begriffen:</div>
+    <div class="fillin-box">
+      <div class="fillin-sentence">
+        Das <input class="fillin-input" id="f1" placeholder="???"> BIP berücksichtigt die Inflation und zeigt deshalb das <input class="fillin-input" id="f2" placeholder="???"> Wirtschaftswachstum.
+      </div>
+      <div class="fillin-sentence">
+        Das <input class="fillin-input" id="f3" placeholder="???"> BIP wird zu aktuellen Marktpreisen ermittelt und kann deshalb durch <input class="fillin-input" id="f4" placeholder="???"> in die Höhe getrieben werden.
+      </div>
+    </div>
+    <button class="check-btn" onclick="checkFillin()">Überprüfen ✓</button>
+    <button class="check-btn" id="q2-show-answers" onclick="showFillinAnswers()" style="display:none;margin-left:10px;background:linear-gradient(135deg,#555,#777);">💡 Lösungen zeigen</button>
+    <div class="quiz-feedback" id="q2-feedback"></div>
+    <button class="quiz-next" id="q2-next" onclick="scrollToNext('sec3')">Weiter →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     KAPITEL 3 – GRENZEN DES BIP
+     ════════════════════════════════════ -->
+<section id="sec3" data-chapter="3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">Grenzen des <span>BIP</span></div>
+  </div>
+
+  <div class="card">
+    <p>Das BIP ist nützlich – aber es misst <strong>nicht alles</strong>. Es hat wichtige Schwächen:</p>
+    <ul class="limit-list">
+      <li>
+        <span class="limit-icon">🏠</span>
+        <div><strong>Unbezahlte Arbeit fehlt</strong><br><span style="color:var(--muted);font-size:0.88rem;">Hausarbeit, Kindererziehung, Pflege von Angehörigen, Ehrenamt – all das zählt nicht, obwohl es gesellschaftlich wertvoll ist.</span></div>
+      </li>
+      <li>
+        <span class="limit-icon">🕵️</span>
+        <div><strong>Schwarzarbeit wird kaum erfasst</strong><br><span style="color:var(--muted);font-size:0.88rem;">Schätzungsweise <span class="chip red">~450 Mrd. € (2025)</span> bleiben unsichtbar.</span></div>
+      </li>
+      <li>
+        <span class="limit-icon">🏚️</span>
+        <div><strong>Negative Leistungen gehen ein</strong><br><span style="color:var(--muted);font-size:0.88rem;">Kosten für Unfallbeseitigung oder Umweltschäden erhöhen das BIP – obwohl sie den Lebensstandard senken.</span></div>
+      </li>
+      <li>
+        <span class="limit-icon">⚖️</span>
+        <div><strong>Keine Aussage über Verteilung</strong><br><span style="color:var(--muted);font-size:0.88rem;">Ein hohes BIP kann trotzdem bedeuten, dass wenige sehr viel besitzen und viele sehr wenig.</span></div>
+      </li>
+    </ul>
+    <div class="example-box">
+      <div class="ex-label">🧩 Beispiel</div>
+      <p>Wenn nach einem Sturm teure Reparaturen durchgeführt werden, <strong>steigt das BIP</strong> – obwohl nur Schäden beseitigt wurden. Niemand hat davon profitiert, aber die Wirtschaftsleistung sieht besser aus.</p>
+    </div>
+  </div>
+
+  <!-- Quiz 3 – Drag & Drop -->
+  <div class="quiz-box" id="q3">
+    <div class="quiz-label">✏️ Übung 3 – Sortieren</div>
+    <div class="quiz-question">Ordne zu: Was wird vom BIP erfasst – und was nicht?</div>
+    <div class="drag-quiz">
+      <p>Tippe auf einen Begriff, dann auf die passende Kategorie:</p>
+      <div class="drag-items" id="dragItems">
+        <div class="drag-item" data-val="Auto produzieren" onclick="selectDragItem(this)">🚗 Auto produzieren</div>
+        <div class="drag-item" data-val="Kind betreuen" onclick="selectDragItem(this)">👶 Kind betreuen (unbezahlt)</div>
+        <div class="drag-item" data-val="Friseur" onclick="selectDragItem(this)">✂️ Friseurbesuch</div>
+        <div class="drag-item" data-val="Ehrenamt" onclick="selectDragItem(this)">🤝 Ehrenamtliche Arbeit</div>
+        <div class="drag-item" data-val="Unfallschäden" onclick="selectDragItem(this)">🚧 Unfallschäden beseitigen</div>
+        <div class="drag-item" data-val="Schwarzarbeit" onclick="selectDragItem(this)">🕵️ Schwarzarbeit</div>
+      </div>
+      <div class="drop-zones">
+        <div class="drop-zone" id="zone-ja" onclick="dropToZone(this)">
+          <span class="drop-zone-label" style="color:var(--accent2)">✅ Geht ins BIP ein</span>
+        </div>
+        <div class="drop-zone" id="zone-nein" onclick="dropToZone(this)">
+          <span class="drop-zone-label" style="color:var(--accent3)">❌ Geht NICHT ins BIP ein</span>
+        </div>
+      </div>
+      <button class="check-btn" onclick="checkDrag()" style="margin-top:16px;">Überprüfen ✓</button>
+      <div class="drag-result" id="q3-result"></div>
+    </div>
+    <button class="quiz-next" id="q3-next" onclick="scrollToNext('sec4')">Weiter →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     KAPITEL 4 – 3 BERECHNUNGSWEGE
+     ════════════════════════════════════ -->
+<section id="sec4" data-chapter="4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Drei Wege das BIP zu <span>berechnen</span></div>
+  </div>
+
+  <div class="card">
+    <p>Das BIP kann auf <strong>drei Arten ermittelt</strong> werden – alle liefern dasselbe Ergebnis:</p>
+    <div class="methods-grid">
+      <div class="method-card m1">
+        <div class="m-icon">🏭</div>
+        <h4 style="color:var(--accent)">Entstehungsrechnung</h4>
+        <p>Wo wurde produziert?</p>
+        <div class="m-examples">Dienstleistungen · Industrie · Handel</div>
+      </div>
+      <div class="method-card m2">
+        <div class="m-icon">🛒</div>
+        <h4 style="color:var(--accent2)">Verwendungsrechnung</h4>
+        <p>Wofür wurde es verwendet?</p>
+        <div class="m-examples">Staatsverbrauch · Investitionen · Privater Verbrauch</div>
+      </div>
+      <div class="method-card m3">
+        <div class="m-icon">💰</div>
+        <h4 style="color:var(--accent4)">Verteilungsrechnung</h4>
+        <p>An wen wurde es verteilt?</p>
+        <div class="m-examples">Löhne · Gewinne · Vermögenserträge</div>
+      </div>
+    </div>
+    <div class="example-box">
+      <div class="ex-label">🧩 Merkhilfe</div>
+      <p><strong>Entstehung</strong> = Wo kommt das Geld her? | <strong>Verwendung</strong> = Wohin fließt es? | <strong>Verteilung</strong> = Wer bekommt es?</p>
+    </div>
+  </div>
+
+  <!-- Quiz 4 – Multiple Choice -->
+  <div class="quiz-box" id="q4a">
+    <div class="quiz-label">✏️ Übung 4a</div>
+    <div class="quiz-question">Die Verwendungsrechnung fragt: „Wofür wurde das BIP verwendet?" Welches der folgenden Beispiele gehört dazu?</div>
+    <div class="quiz-options">
+      <button class="quiz-option" onclick="checkQ('q4a', this, false)">Löhne der Arbeitnehmer</button>
+      <button class="quiz-option" onclick="checkQ('q4a', this, false)">Leistungen der Industrie</button>
+      <button class="quiz-option" onclick="checkQ('q4a', this, true)">Privater Verbrauch der Haushalte</button>
+      <button class="quiz-option" onclick="checkQ('q4a', this, false)">Unternehmensgewinne</button>
+    </div>
+    <div class="quiz-feedback" id="q4a-feedback"></div>
+    <button class="quiz-next" id="q4a-next" onclick="document.getElementById('q4b').scrollIntoView({behavior:'smooth'})">Weiter →</button>
+  </div>
+
+  <div class="quiz-box" id="q4b" style="margin-top:16px;">
+    <div class="quiz-label">✏️ Übung 4b</div>
+    <div class="quiz-question">„Löhne, Gewinne und Vermögenserträge" – zu welcher Berechnungsart gehören diese Begriffe?</div>
+    <div class="quiz-options">
+      <button class="quiz-option" onclick="checkQ('q4b', this, false)">Entstehungsrechnung</button>
+      <button class="quiz-option" onclick="checkQ('q4b', this, false)">Verwendungsrechnung</button>
+      <button class="quiz-option" onclick="checkQ('q4b', this, true)">Verteilungsrechnung</button>
+    </div>
+    <div class="quiz-feedback" id="q4b-feedback"></div>
+    <button class="quiz-next" id="q4b-next" onclick="scrollToNext('score')">Ergebnis ansehen 🎉</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     SCORE
+     ════════════════════════════════════ -->
+<div class="score-banner" id="score">
+  <div style="font-size:2.5rem;margin-bottom:8px;">🎓</div>
+  <div class="score-big" id="scoreBig">0/5</div>
+  <div class="score-msg" id="scoreMsg">Vervollständige alle Übungen!</div>
+  <button class="restart-btn" onclick="restart()">🔄 Nochmal von vorne</button>
+</div>
+
+<script>
+// ── STATE ──
+let totalScore = 0;
+let maxScore = 5;
+const chaptersTotal = 4;
+let chaptersDone = new Set();
+let selectedDragItem = null;
+const dragCorrect = {
+  'zone-ja':   ['Auto produzieren','Friseur','Unfallschäden'],
+  'zone-nein': ['Kind betreuen','Ehrenamt','Schwarzarbeit']
+};
+
+// ── NAV DOTS ──
+let activeChapter = 0;
+function buildNav() {
+  const cont = document.getElementById('navDots');
+  cont.innerHTML = '';
+  for (let i = 1; i <= chaptersTotal; i++) {
+    const d = document.createElement('div');
+    let cls = 'nav-dot';
+    if (chaptersDone.has(i)) cls += ' done';
+    else if (i === activeChapter) cls += ' active';
+    d.className = cls;
+    d.textContent = i;
+    d.onclick = () => document.getElementById('sec'+i).scrollIntoView({behavior:'smooth'});
+    cont.appendChild(d);
+  }
+}
+buildNav();
+
+// Track active chapter on scroll
+window.addEventListener('scroll', () => {
+  let current = 0;
+  for (let i = 1; i <= chaptersTotal; i++) {
+    const sec = document.getElementById('sec'+i);
+    if (sec && sec.getBoundingClientRect().top < window.innerHeight * 0.6) current = i;
+  }
+  if (current !== activeChapter) { activeChapter = current; buildNav(); }
+}, {passive: true});
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      animateBars(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+function animateBars(el) {
+  el.querySelectorAll('.bar-fill').forEach(b => {
+    setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 300);
+  });
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  const pct = (chaptersDone.size / chaptersTotal) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  buildNav();
+}
+
+// ── QUIZ HELPERS ──
+function checkQ(id, btn, correct) {
+  const box = document.getElementById(id);
+  const opts = box.querySelectorAll('.quiz-option');
+  const fb = document.getElementById(id + '-feedback');
+  const nxt = document.getElementById(id + '-next');
+  opts.forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+  if (correct) {
+    btn.classList.add('correct');
+    fb.textContent = '✅ Richtig! Super gemacht.';
+    fb.className = 'quiz-feedback show ok';
+    totalScore++;
+    markChapter(id);
+    confetti();
+  } else {
+    btn.classList.add('wrong'); btn.classList.add('shake');
+    fb.textContent = '❌ Leider falsch. Die grün markierte Antwort wäre korrekt gewesen.';
+    fb.className = 'quiz-feedback show nok';
+    opts.forEach(o => { if (o.onclick === null && !o.classList.contains('wrong') && !o.classList.contains('correct')) {
+      // find correct
+    }});
+    // mark correct
+    opts.forEach(o => {
+      if (o.textContent.trim() !== btn.textContent.trim()) {
+        const isCorrect = o.onclick === null ? false : true;
+      }
+    });
+    markChapter(id);
+  }
+  nxt.classList.add('show');
+}
+
+function markChapter(qId) {
+  if (qId.startsWith('q1')) chaptersDone.add(1);
+  else if (qId.startsWith('q2')) chaptersDone.add(2);
+  else if (qId.startsWith('q3')) chaptersDone.add(3);
+  else if (qId.startsWith('q4b')) chaptersDone.add(4);
+  updateProgress();
+}
+
+// ── FILL-IN ──
+const fillinAnswers = {
+  f1: ['reale','reales'],
+  f2: ['echte','tatsächliche','wirkliche'],
+  f3: ['nominale','nominales'],
+  f4: ['inflation','preissteigerungen','preissteigerung']
+};
+const fillinSolutions = { f1: 'reale', f2: 'echte', f3: 'nominale', f4: 'Inflation' };
+
+function checkFillin() {
+  let allOk = true;
+  Object.entries(fillinAnswers).forEach(([id, answers]) => {
+    const el = document.getElementById(id);
+    const val = el.value.trim().toLowerCase();
+    const ok = answers.some(a => val.includes(a.toLowerCase()));
+    el.classList.toggle('correct-fill', ok);
+    el.classList.toggle('wrong-fill', !ok);
+    if (!ok) allOk = false;
+  });
+  const fb = document.getElementById('q2-feedback');
+  const nxt = document.getElementById('q2-next');
+  const showBtn = document.getElementById('q2-show-answers');
+  if (allOk) {
+    fb.textContent = '✅ Alle Lücken richtig ausgefüllt!';
+    fb.className = 'quiz-feedback show ok';
+    totalScore++;
+    chaptersDone.add(2);
+    updateProgress();
+    confetti();
+    if (showBtn) showBtn.style.display = 'none';
+  } else {
+    fb.textContent = '❌ Nicht ganz – überprüfe die rot markierten Felder.';
+    fb.className = 'quiz-feedback show nok';
+    if (showBtn) showBtn.style.display = 'inline-block';
+  }
+  nxt.classList.add('show');
+}
+
+function showFillinAnswers() {
+  Object.entries(fillinSolutions).forEach(([id, answer]) => {
+    const el = document.getElementById(id);
+    el.value = answer;
+    el.classList.remove('wrong-fill');
+    el.classList.add('correct-fill');
+  });
+  const fb = document.getElementById('q2-feedback');
+  fb.textContent = '💡 Lösungen eingeblendet – versuche es beim nächsten Mal selbst!';
+  fb.className = 'quiz-feedback show ok';
+  document.getElementById('q2-show-answers').style.display = 'none';
+  chaptersDone.add(2);
+  updateProgress();
+}
+
+// ── DRAG (CLICK-BASED FOR MOBILE) ──
+function selectDragItem(el) {
+  if (el.classList.contains('placed')) return;
+  document.querySelectorAll('.drag-item').forEach(d => d.style.outline = '');
+  if (selectedDragItem === el) { selectedDragItem = null; return; }
+  selectedDragItem = el;
+  el.style.outline = '3px solid var(--accent2)';
+}
+function dropToZone(zone) {
+  if (!selectedDragItem) return;
+  const tag = document.createElement('span');
+  tag.className = 'placed-tag';
+  tag.textContent = selectedDragItem.dataset.val;
+  tag.dataset.val = selectedDragItem.dataset.val;
+  tag.dataset.zone = zone.id;
+  tag.onclick = () => {
+    selectedDragItem = null;
+    document.querySelectorAll('.drag-item').forEach(d => {
+      if (d.dataset.val === tag.dataset.val) d.classList.remove('placed');
+    });
+    tag.remove();
+  };
+  zone.appendChild(tag);
+  selectedDragItem.classList.add('placed');
+  selectedDragItem.style.outline = '';
+  selectedDragItem = null;
+}
+function checkDrag() {
+  const result = document.getElementById('q3-result');
+  const nxt = document.getElementById('q3-next');
+  let correct = 0, total = 0;
+  document.querySelectorAll('.placed-tag').forEach(tag => {
+    total++;
+    const zoneId = tag.dataset.zone;
+    const val = tag.dataset.val;
+    const ok = dragCorrect[zoneId] && dragCorrect[zoneId].includes(val);
+    tag.classList.toggle('wrong-place', !ok);
+    if (ok) correct++;
+  });
+  if (total < 6) {
+    result.textContent = '⚠️ Bitte alle Begriffe zuordnen!';
+    result.className = 'drag-result show';
+    result.style.background = 'rgba(255,217,61,0.1)';
+    result.style.color = 'var(--accent4)';
+    result.style.border = '1px solid rgba(255,217,61,0.3)';
+    return;
+  }
+  if (correct === 6) {
+    result.textContent = '✅ Perfekt! Alle 6 Begriffe richtig zugeordnet!';
+    result.className = 'drag-result show';
+    result.style.background = 'rgba(0,212,170,0.1)';
+    result.style.color = 'var(--accent2)';
+    result.style.border = '1px solid rgba(0,212,170,0.25)';
+    totalScore++;
+    chaptersDone.add(3);
+    updateProgress();
+    confetti();
+  } else {
+    result.textContent = `❌ ${correct}/6 richtig. Rot markierte Begriffe sind falsch. Tippe auf einen Tag, um ihn zu entfernen.`;
+    result.className = 'drag-result show';
+    result.style.background = 'rgba(255,107,107,0.1)';
+    result.style.color = '#ff9f9f';
+    result.style.border = '1px solid rgba(255,107,107,0.25)';
+  }
+  nxt.classList.add('show');
+}
+
+// ── SCROLL TO NEXT ──
+function scrollToNext(id) {
+  const el = document.getElementById(id);
+  if (el) setTimeout(() => el.scrollIntoView({behavior:'smooth'}), 100);
+  if (id === 'score') showScore();
+}
+
+// ── SCORE ──
+function showScore() {
+  const banner = document.getElementById('score');
+  banner.classList.add('show');
+  const pct = Math.round((totalScore / maxScore) * 100);
+  document.getElementById('scoreBig').textContent = totalScore + '/' + maxScore;
+  let msg = '';
+  if (pct === 100) msg = '🎉 Perfekt! Du hast alles verstanden!';
+  else if (pct >= 60) msg = '👍 Gut gemacht! Noch ein bisschen Übung und du hast es drauf.';
+  else msg = '📚 Lies die Kapitel nochmal durch – du schaffst das!';
+  document.getElementById('scoreMsg').textContent = msg;
+}
+
+// ── RESTART ──
+function restart() {
+  location.reload();
+}
+
+// ── CONFETTI ──
+function confetti() {
+  const colors = ['#6c63ff','#00d4aa','#ffd93d','#ff6b6b','#a89dff'];
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.top = '-10px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDelay = Math.random() * 0.6 + 's';
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2500);
+  }
+}
+
+// ── q1 correct answer highlight fix ──
+document.querySelectorAll('.quiz-option').forEach(btn => {
+  btn._isCorrect = btn.onclick ? btn.onclick.toString().includes('true') : false;
+});
+</script>
+</body>
+</html>
