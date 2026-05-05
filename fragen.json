@@ -928,7 +928,7 @@
           "match": "Pro"
         },
         {
-          "item": "Alle Waren sind jederzeit weltweit verfügbar",
+          "item": "Viel Waren sind weltweit verfügbar",
           "match": "Pro"
         },
         {
@@ -2537,8 +2537,8 @@
       "cat": "S",
       "question": "Was ist der Euro und seit wann ist er im Umlauf?",
       "options": [
-        "Die offizielle Währung aller 27 EU-Mitgliedstaaten, eingeführt als Bargeld im Januar 1995",
-        "Die gemeinsame Währung der Eurozone (derzeit 20 EU-Staaten), seit dem 1. Januar 2002 als Bargeld im Umlauf",
+        "Die offizielle Währung alle 27 EU-Mitgliedstaaten, eingeführt als Bargeld im Januar 1995",
+        "Die gemeinsame Währung der Eurozone (derzeit 21 EU-Staaten), seit dem 1. Januar 2002 als Bargeld im Umlauf",
         "Eine reine Verrechnungswährung für den internationalen Handel, die nur zwischen Banken verwendet wird",
         "Die ehemalige Währung der EU, die inzwischen durch eine neue digitale Gemeinschaftswährung ersetzt wurde"
       ],
@@ -2570,7 +2570,7 @@
         "Die Satzung der UNO, die ausschließlich die Aufgaben des Sicherheitsrates und der Generalversammlung definiert",
         "Ein Programm zur Förderung der Raumfahrt und der wissenschaftlichen Erforschung des Weltraums"
       ],
-      "correct": 1,
+      "correct": 0,
       "explanation": "Die 17 Sustainable Development Goals (SDGs) wurden 2015 von allen UN-Mitgliedstaaten beschlossen (Agenda 2030). Sie umfassen u.a.: Keine Armut, Kein Hunger, Gesundheit, Bildung, Geschlechtergleichheit, Sauberes Wasser, Bezahlbare Energie, Klimaschutz, Frieden und Gerechtigkeit."
     },
     {
