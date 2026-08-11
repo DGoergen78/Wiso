@@ -1,0 +1,23 @@
+{
+  "title": "WiSo Prüfungsvorbereitung",
+  "subtitle": "Fragenkatalog – Aktualisiert 2026",
+  "categories": {
+    "S": "Sozialkunde",
+    "W": "Wirtschaftskunde"
+  },
+  "countOptions": [
+    10,
+    20,
+    45
+  ],
+  "grading": {
+    "1": 92,
+    "2": 81,
+    "3": 67,
+    "4": 50,
+    "5": 30
+  },
+  "files": [
+    "2026sommer.json"
+  ]
+}
