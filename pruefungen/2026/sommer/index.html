@@ -16,6 +16,32 @@
 var CONFIG=null;var ALL_QUESTIONS=[];var TOTAL_ALL=0;var CATEGORIES={};var COUNT_OPTIONS=[10,20,40,100];var TITLE="WiSo Prüfungsvorbereitung";var SUBTITLE="";
 var state={screen:"loading",catFilter:"all",countChoice:0,questions:[],idx:0,answered:false,selectedIdx:null,isCorrect:false,correctCount:0,wrongCount:0,answers:[],matchSelections:{},matchSubmitted:false,matchUserAnswers:null,activeTotal:0,shuffledOpts:null,shuffledCorr:null,loadError:null,loadProgress:""};
 
+function saveProgress(){
+  try{
+    var save={idx:state.idx,answered:state.answered,selectedIdx:state.selectedIdx,isCorrect:state.isCorrect,correctCount:state.correctCount,wrongCount:state.wrongCount,answers:state.answers,activeTotal:state.activeTotal,screen:state.screen,questionIds:state.questions.map(function(q){return q.id;}),shuffledOpts:state.shuffledOpts,shuffledCorr:state.shuffledCorr,shuffledPairs:state.shuffledPairs,matchSelections:state.matchSelections,matchSubmitted:state.matchSubmitted,matchUserAnswers:state.matchUserAnswers,catFilter:state.catFilter,countChoice:state.countChoice};
+    localStorage.setItem("wiso_progress",JSON.stringify(save));
+  }catch(e){}
+}
+function clearProgress(){try{localStorage.removeItem("wiso_progress");}catch(e){}}
+function restoreProgress(){
+  try{
+    var raw=localStorage.getItem("wiso_progress");
+    if(!raw)return false;
+    var save=JSON.parse(raw);
+    if(!save||!save.questionIds||save.questionIds.length===0)return false;
+    if(save.screen!=="quiz"&&save.screen!=="result")return false;
+    var qs=[];
+    for(var i=0;i<save.questionIds.length;i++){
+      var found=null;
+      for(var j=0;j<ALL_QUESTIONS.length;j++){if(ALL_QUESTIONS[j].id===save.questionIds[i]){found=ALL_QUESTIONS[j];break;}}
+      if(!found){clearProgress();return false;}
+      qs.push(found);
+    }
+    state.questions=qs;state.idx=save.idx;state.answered=save.answered;state.selectedIdx=save.selectedIdx;state.isCorrect=save.isCorrect;state.correctCount=save.correctCount;state.wrongCount=save.wrongCount;state.answers=save.answers||[];state.activeTotal=save.activeTotal;state.screen=save.screen;state.shuffledOpts=save.shuffledOpts;state.shuffledCorr=save.shuffledCorr;state.shuffledPairs=save.shuffledPairs||null;state.matchSelections=save.matchSelections||{};state.matchSubmitted=save.matchSubmitted||false;state.matchUserAnswers=save.matchUserAnswers||null;state.catFilter=save.catFilter||"all";state.countChoice=save.countChoice||0;
+    return true;
+  }catch(e){return false;}
+}
+
 function loadConfig(){
   state.screen="loading";state.loadError=null;state.loadProgress="Lade config.json\u2026";render();
   fetch("config.json?t="+Date.now()).then(function(r){
@@ -31,11 +57,16 @@ function loadConfig(){
     if(data.questions&&data.questions.length>0){
       ALL_QUESTIONS=ALL_QUESTIONS.concat(data.questions);
     }
+    function finishLoad(){
+      state.loadProgress="";
+      if(restoreProgress()){render();}
+      else{state.screen="start";render();}
+    }
     var files=data.files||[];
     if(files.length===0){
       TOTAL_ALL=ALL_QUESTIONS.length;
       if(TOTAL_ALL===0)throw new Error("Keine Fragen gefunden");
-      state.screen="start";render();return;
+      finishLoad();return;
     }
     var loaded=0;var errors=[];
     files.forEach(function(filename,fi){
@@ -54,7 +85,7 @@ function loadConfig(){
           for(var ri=0;ri<ALL_QUESTIONS.length;ri++)ALL_QUESTIONS[ri].id=ri+1;
           TOTAL_ALL=ALL_QUESTIONS.length;
           if(TOTAL_ALL===0)throw new Error("Keine Fragen in den Dateien gefunden");
-          state.loadProgress="";state.screen="start";render();
+          finishLoad();
         }
       }).catch(function(err2){
         errors.push(err2.message||filename);loaded++;
@@ -62,7 +93,7 @@ function loadConfig(){
           if(ALL_QUESTIONS.length>0){
             for(var ri=0;ri<ALL_QUESTIONS.length;ri++)ALL_QUESTIONS[ri].id=ri+1;
             TOTAL_ALL=ALL_QUESTIONS.length;
-            state.loadProgress="";state.screen="start";render();
+            finishLoad();
           }else{
             state.loadError="Fehler beim Laden: "+errors.join(", ");state.loadProgress="";render();
           }
@@ -85,11 +116,12 @@ function setCount(n){state.countChoice=n;render();}
 function getFiltered(){if(state.catFilter==="all")return ALL_QUESTIONS.slice();return ALL_QUESTIONS.filter(function(q){return q.cat===state.catFilter;});}
 function prepOpts(q){if(q.type==="single"){var idx=[];for(var i=0;i<q.options.length;i++)idx.push(i);idx=shuffle(idx);state.shuffledOpts=[];state.shuffledCorr=-1;for(var j=0;j<idx.length;j++){state.shuffledOpts.push(q.options[idx[j]]);if(idx[j]===q.correct)state.shuffledCorr=j;}}else{state.shuffledOpts=null;state.shuffledCorr=null;if(q.type==="matching"&&q.pairs){var pi=[];for(var k=0;k<q.pairs.length;k++)pi.push(k);state.shuffledPairs=shuffle(pi);}else{state.shuffledPairs=null;}}}
 function doStart(){var pool=getFiltered();var qs=shuffle(pool);var n=state.countChoice;if(n===0||n>=qs.length)n=qs.length;else qs=qs.slice(0,n);state.questions=qs;state.activeTotal=qs.length;state.screen="quiz";state.idx=0;state.answered=false;state.selectedIdx=null;state.isCorrect=false;state.correctCount=0;state.wrongCount=0;state.answers=[];state.matchSelections={};state.matchSubmitted=false;state.matchUserAnswers=null;prepOpts(qs[0]);render();}
-function doSelectOption(i){if(state.answered)return;var c=(i===state.shuffledCorr);state.selectedIdx=i;state.isCorrect=c;state.answered=true;if(c)state.correctCount++;else state.wrongCount++;state.answers.push({isCorrect:c});render();}
+function doSelectOption(i){if(state.answered)return;var c=(i===state.shuffledCorr);state.selectedIdx=i;state.isCorrect=c;state.answered=true;if(c)state.correctCount++;else state.wrongCount++;state.answers.push({isCorrect:c});saveProgress();render();}
 function doSelectMatch(pi,val){if(state.matchSubmitted)return;state.matchSelections[pi]=val;render();}
-function doSubmitMatch(){var q=state.questions[state.idx];if(Object.keys(state.matchSelections).length<q.pairs.length)return;var ok=true;for(var i=0;i<q.pairs.length;i++){if(state.matchSelections[i]!==q.pairs[i].match)ok=false;}state.matchSubmitted=true;state.answered=true;state.isCorrect=ok;state.matchUserAnswers={};for(var k in state.matchSelections)state.matchUserAnswers[k]=state.matchSelections[k];if(ok)state.correctCount++;else state.wrongCount++;state.answers.push({isCorrect:ok});render();}
-function doNext(){if(state.idx+1>=state.questions.length){state.screen="result";}else{state.idx++;state.answered=false;state.selectedIdx=null;state.isCorrect=false;state.matchSelections={};state.matchSubmitted=false;state.matchUserAnswers=null;prepOpts(state.questions[state.idx]);}render();window.scrollTo(0,0);}
-function doRestart(){state.screen="start";render();}
+function doSubmitMatch(){var q=state.questions[state.idx];if(Object.keys(state.matchSelections).length<q.pairs.length)return;var ok=true;for(var i=0;i<q.pairs.length;i++){if(state.matchSelections[i]!==q.pairs[i].match)ok=false;}state.matchSubmitted=true;state.answered=true;state.isCorrect=ok;state.matchUserAnswers={};for(var k in state.matchSelections)state.matchUserAnswers[k]=state.matchSelections[k];if(ok)state.correctCount++;else state.wrongCount++;state.answers.push({isCorrect:ok});saveProgress();render();}
+function doNext(){if(state.idx+1>=state.questions.length){state.screen="result";clearProgress();}else{state.idx++;state.answered=false;state.selectedIdx=null;state.isCorrect=false;state.matchSelections={};state.matchSubmitted=false;state.matchUserAnswers=null;prepOpts(state.questions[state.idx]);}saveProgress();render();window.scrollTo(0,0);}
+function doRestart(){clearProgress();state.screen="start";render();}
+function doAbort(){if(confirm("Quiz wirklich abbrechen? Der Fortschritt geht verloren.")){clearProgress();state.screen="start";render();}}
 function toggleExpl(i){var el=document.getElementById("ri-"+i);if(el)el.classList.toggle("open");}
 function render(){var app=document.getElementById("app");if(state.screen==="loading")app.innerHTML=renderLoading();else if(state.screen==="start")app.innerHTML=renderStart();else if(state.screen==="quiz")app.innerHTML=renderQuiz();else if(state.screen==="result")app.innerHTML=renderResult();}
 
@@ -122,7 +154,7 @@ function renderStart(){
 function renderQuiz(){
   var q=state.questions[state.idx];var tot=state.activeTotal;var pct=(state.idx/tot*100);
   var cn=CATEGORIES[q.cat]||q.cat;
-  var h='<div class="progress-wrap"><div class="progress-info"><span>Frage '+(state.idx+1)+' von '+tot+'</span><div class="stats"><span class="correct">'+state.correctCount+' richtig</span><span class="wrong">'+state.wrongCount+' falsch</span></div></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>';
+  var h='<div class="progress-wrap"><div class="progress-info"><span>Frage '+(state.idx+1)+' von '+tot+'</span><div class="stats"><span class="correct">'+state.correctCount+' richtig</span><span class="wrong">'+state.wrongCount+' falsch</span><button onclick="doAbort()" style="background:none;border:none;color:#475569;font-size:12px;font-family:inherit;cursor:pointer;margin-left:10px;padding:2px 6px" title="Quiz abbrechen">\u2717 Abbrechen</button></div></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>';
   h+='<div class="question-wrap"><div class="question-text"><span class="question-num">#'+(state.idx+1)+'</span>'+esc(q.question)+'<span class="cat-badge '+q.cat+'">'+esc(cn)+'</span></div>';
   if(q.type==="single"){
     var opts=state.shuffledOpts||q.options;
